@@ -1,0 +1,6157 @@
+PROJECT: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI
+
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\app.py ==========
+
+
+import streamlit as st
+import shutil
+from config import UPLOAD_DIR
+from ingestion.file_validator import validate_file
+import pandas as pd
+from ingestion.asset_registry import (
+    register_asset,
+    get_all_assets,
+    delete_asset
+)
+
+# Page settings
+st.set_page_config(
+    page_title="Multimodal AI Platform",
+    page_icon="🎓",
+    layout="wide"
+)
+
+
+# Application heading
+st.title("Coursera Multimodal Intelligence Platform")
+
+st.write("Upload your learning assets for AI processing.")
+
+
+# File upload section
+st.subheader("Asset Intake Console")
+
+uploaded_file = st.file_uploader(
+    "Upload Video, PDF, Audio, Image or Text",
+    type=["mp4", "mov", "mp3", "wav", "pdf",
+          "png", "jpg", "jpeg", "txt", "csv"]
+)
+
+
+# User information
+owner = st.text_input("Owner Name", value="Student_01")
+
+permission = st.selectbox(
+    "Permission Scope",
+    ["private", "public"]
+)
+
+
+# Process uploaded file
+if uploaded_file is not None:
+
+    if st.button("Upload Asset"):
+
+        # Save uploaded file temporarily
+        file_path = UPLOAD_DIR / uploaded_file.name
+
+        with open(file_path, "wb") as file:
+            file.write(uploaded_file.getbuffer())
+
+        # Validate uploaded file
+        is_valid, message, modality = validate_file(file_path)
+
+        if is_valid:
+
+            # Register asset in database
+            asset_id = register_asset(
+                filename=uploaded_file.name,
+                modality=modality,
+                owner=owner,
+                permission_scope=permission
+            )
+
+            st.success("Asset uploaded and registered successfully!")
+
+            st.write("Asset ID:", asset_id)
+            st.write("Modality:", modality)
+
+        else:
+
+            st.error(message)
+
+            # Remove invalid file
+            if file_path.exists():
+                file_path.unlink()
+
+# Display registered assets
+
+st.divider()
+
+st.subheader("Registered Assets")
+
+assets = get_all_assets()
+
+if assets:
+
+    columns = [
+        "Asset ID",
+        "Filename",
+        "Modality",
+        "Owner",
+        "Permission",
+        "Status",
+        "Created At"
+    ]
+
+    assets_df = pd.DataFrame(
+        assets,
+        columns=columns
+    )
+
+    st.dataframe(
+        assets_df.drop(columns=["Asset ID"]),
+        use_container_width=True,
+        hide_index=True
+    )
+
+    st.write("Total Assets:", len(assets))
+
+else:
+
+    st.info("No assets registered yet.")
+
+
+
+# Delete asset section
+
+st.divider()
+
+st.subheader("Delete Registered Asset")
+
+assets = get_all_assets()
+
+if assets:
+
+    # Create asset selection options
+    asset_options = {
+        f"{asset[1]} ({asset[2]}) - {asset[0][:8]}": asset[0]
+        for asset in assets
+    }
+
+    selected_asset = st.selectbox(
+        "Select an asset to delete",
+        list(asset_options.keys())
+    )
+
+    if st.button("Delete Selected Asset"):
+
+        selected_id = asset_options[selected_asset]
+
+        success = delete_asset(selected_id)
+
+        if success:
+            st.success("Asset deleted successfully!")
+            st.rerun()
+
+        else:
+            st.error("Asset could not be deleted.")
+
+else:
+
+    st.info("No assets available for deletion.")
+
+
+
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\complete_project_audit.txt ==========
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\app.py ==========
+
+
+import streamlit as st
+import shutil
+from config import UPLOAD_DIR
+from ingestion.file_validator import validate_file
+import pandas as pd
+from ingestion.asset_registry import (
+    register_asset,
+    get_all_assets,
+    delete_asset
+)
+
+# Page settings
+st.set_page_config(
+    page_title="Multimodal AI Platform",
+    page_icon="🎓",
+    layout="wide"
+)
+
+
+# Application heading
+st.title("Coursera Multimodal Intelligence Platform")
+
+st.write("Upload your learning assets for AI processing.")
+
+
+# File upload section
+st.subheader("Asset Intake Console")
+
+uploaded_file = st.file_uploader(
+    "Upload Video, PDF, Audio, Image or Text",
+    type=["mp4", "mov", "mp3", "wav", "pdf",
+          "png", "jpg", "jpeg", "txt", "csv"]
+)
+
+
+# User information
+owner = st.text_input("Owner Name", value="Student_01")
+
+permission = st.selectbox(
+    "Permission Scope",
+    ["private", "public"]
+)
+
+
+# Process uploaded file
+if uploaded_file is not None:
+
+    if st.button("Upload Asset"):
+
+        # Save uploaded file temporarily
+        file_path = UPLOAD_DIR / uploaded_file.name
+
+        with open(file_path, "wb") as file:
+            file.write(uploaded_file.getbuffer())
+
+        # Validate uploaded file
+        is_valid, message, modality = validate_file(file_path)
+
+        if is_valid:
+
+            # Register asset in database
+            asset_id = register_asset(
+                filename=uploaded_file.name,
+                modality=modality,
+                owner=owner,
+                permission_scope=permission
+            )
+
+            st.success("Asset uploaded and registered successfully!")
+
+            st.write("Asset ID:", asset_id)
+            st.write("Modality:", modality)
+
+        else:
+
+            st.error(message)
+
+            # Remove invalid file
+            if file_path.exists():
+                file_path.unlink()
+
+# Display registered assets
+
+st.divider()
+
+st.subheader("Registered Assets")
+
+assets = get_all_assets()
+
+if assets:
+
+    columns = [
+        "Asset ID",
+        "Filename",
+        "Modality",
+        "Owner",
+        "Permission",
+        "Status",
+        "Created At"
+    ]
+
+    assets_df = pd.DataFrame(
+        assets,
+        columns=columns
+    )
+
+    st.dataframe(
+        assets_df.drop(columns=["Asset ID"]),
+        use_container_width=True,
+        hide_index=True
+    )
+
+    st.write("Total Assets:", len(assets))
+
+else:
+
+    st.info("No assets registered yet.")
+
+
+
+# Delete asset section
+
+st.divider()
+
+st.subheader("Delete Registered Asset")
+
+assets = get_all_assets()
+
+if assets:
+
+    # Create asset selection options
+    asset_options = {
+        f"{asset[1]} ({asset[2]}) - {asset[0][:8]}": asset[0]
+        for asset in assets
+    }
+
+    selected_asset = st.selectbox(
+        "Select an asset to delete",
+        list(asset_options.keys())
+    )
+
+    if st.button("Delete Selected Asset"):
+
+        selected_id = asset_options[selected_asset]
+
+        success = delete_asset(selected_id)
+
+        if success:
+            st.success("Asset deleted successfully!")
+            st.rerun()
+
+        else:
+            st.error("Asset could not be deleted.")
+
+else:
+
+    st.info("No assets available for deletion.")
+
+
+
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\config.py ==========
+
+
+from pathlib import Path
+
+# Main project directory
+BASE_DIR = Path(__file__).resolve().parent
+
+# Project name
+PROJECT_NAME = "Coursera Multimodal Intelligence Platform"
+
+# Data directories
+DATA_DIR = BASE_DIR / "data"
+UPLOAD_DIR = DATA_DIR / "uploads"
+PROCESSED_DIR = DATA_DIR / "processed"
+FAISS_DIR = DATA_DIR / "faiss_db"
+
+
+# Create required folders automatically
+DATA_DIR.mkdir(exist_ok=True)
+UPLOAD_DIR.mkdir(exist_ok=True)
+PROCESSED_DIR.mkdir(exist_ok=True)
+FAISS_DIR.mkdir(exist_ok=True)
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\agents\asset_profiler.py ==========
+
+
+# Path aur file information handle karne ke liye Path import karna.
+from pathlib import Path
+
+# Existing asset registry se registered assets retrieve karna.
+from ingestion.asset_registry import get_all_assets
+
+
+# Project ka main folder identify karna.
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Uploaded assets ka folder define karna.
+UPLOAD_DIR = BASE_DIR / "data" / "uploads"
+
+
+# Supported modalities define karna.
+SUPPORTED_MODALITIES = {
+    "pdf",
+    "video",
+    "audio",
+    "image",
+    "text",
+    "quiz",
+    "discussion"
+}
+
+
+# Asset ki profile generate karne wala function.
+def profile_asset(asset_id):
+
+    # Registry se saare registered assets retrieve karna.
+    assets = get_all_assets()
+
+    # Requested asset ko search karna.
+    for asset in assets:
+
+        # Database record se asset ki details nikalna.
+        (
+            registered_id,
+            filename,
+            modality,
+            owner,
+            permission_scope,
+            processing_status,
+            created_at
+        ) = asset
+
+        # Requested asset ID match karna.
+        if registered_id == asset_id:
+
+            # Filename se safe file name identify karna.
+            safe_filename = Path(filename).name
+
+            # Uploaded file ka actual path create karna.
+            file_path = UPLOAD_DIR / safe_filename
+
+            # Check karna ki uploaded file exist karti hai.
+            file_exists = file_path.is_file()
+
+            # File ka extension identify karna.
+            file_extension = file_path.suffix.lower()
+
+            # File ka size available hone par calculate karna.
+            file_size = file_path.stat().st_size if file_exists else None
+
+            # Modality supported hai ya nahi check karna.
+            modality_supported = modality.lower() in SUPPORTED_MODALITIES
+
+            # Asset ki complete profile prepare karna.
+            profile = {
+                "asset_id": registered_id,
+                "filename": filename,
+                "modality": modality,
+                "asset_type": modality,
+                "file_extension": file_extension,
+                "file_exists": file_exists,
+                "file_size_bytes": file_size,
+                "modality_supported": modality_supported,
+                "owner": owner,
+                "permission_scope": permission_scope,
+                "processing_status": processing_status,
+                "created_at": created_at,
+                "profile_status": (
+                    "profiled"
+                    if file_exists and modality_supported
+                    else "needs_attention"
+                )
+            }
+
+            # Generated asset profile return karna.
+            return profile
+
+    # Asset registry mein nahi mila toh None return karna.
+    return None
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\agents\quality_validator.py ==========
+
+ # Regular expression module import karna.
+import re
+
+# AI generated answer validate karne ka function.
+def validate_answer(answer, evidence):
+
+    # Validation issues store karne ke liye list.
+    issues = []
+
+    # Valid citations store karne ke liye list.
+    valid_citations = []
+
+    # Answer string check karna.
+    if not isinstance(answer, str) or not answer.strip():
+
+        # Empty answer par issue add karna.
+        issues.append("Generated answer is empty.")
+
+    # Evidence list check karna.
+    if not evidence:
+
+        # Evidence missing hone par issue add karna.
+        issues.append("No supporting evidence available.")
+
+    # Evidence ke har item ko check karna.
+    for item in evidence or []:
+
+        # Evidence metadata extract karna.
+        metadata = item.get("metadata", {})
+
+        # Important source identifiers select karna.
+        for key in ["asset_id", "chunk_id", "segment_id", "source_id"]:
+
+            # Metadata mein identifier available hai ya nahi.
+            identifier = metadata.get(key)
+
+            # Identifier answer mein present hai ya nahi.
+            if identifier and re.search(
+                r"(?<!\w)" + re.escape(str(identifier)) + r"(?!\w)",
+                answer or ""
+            ):
+
+                # Supported citation record karna.
+                valid_citations.append(str(identifier))
+
+    # Evidence available hai lekin citation mention nahi hui.
+    if evidence and not valid_citations:
+
+        # Missing citation warning add karna.
+        issues.append("No retrieved evidence identifiers found in answer.")
+
+    # Duplicate citations remove karna.
+    valid_citations = list(dict.fromkeys(valid_citations))
+
+    # Final validation result return karna.
+    return {
+        "is_valid": len(issues) == 0,
+        "issues": issues,
+        "valid_citations": valid_citations
+    }
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\agents\retrieval_planner.py ==========
+
+
+# Regular expressions use karne ke liye re import karna.
+import re
+
+# Existing query processor import karna.
+from retrieval.query_processor import process_query
+
+
+# Project ki supported modalities define karna.
+SUPPORTED_MODALITIES = {
+    "pdf": ["pdf", "document", "notes"],
+    "video": ["video", "lecture"],
+    "audio": ["audio", "recording", "speech"],
+    "image": ["image", "picture", "diagram", "chart"],
+    "text": ["text", "article"],
+    "quiz": ["quiz", "question", "assessment"],
+    "discussion": ["discussion", "forum"]
+}
+
+
+# Query se retrieval plan generate karne wala function.
+def plan_retrieval(query, k=3):
+
+    # User query ko clean karna.
+    clean_query = process_query(query)
+
+    # Top K value positive integer honi chahiye.
+    if isinstance(k, bool) or not isinstance(k, int) or k <= 0:
+        raise ValueError("k must be a positive integer")
+
+    # Query ko lowercase mein convert karna.
+    lower_query = clean_query.lower()
+
+    # Query mein mentioned modalities identify karna.
+    selected_modalities = []
+
+    # Har supported modality ko check karna.
+    for modality, terms in SUPPORTED_MODALITIES.items():
+
+        # Modality ke keywords ko query mein search karna.
+        if any(
+            re.search(r"\b" + re.escape(term) + r"\b", lower_query)
+            for term in terms
+        ):
+
+            # Matching modality ko result mein add karna.
+            selected_modalities.append(modality)
+
+    # Common unnecessary words define karna.
+    stop_words = {
+        "the", "is", "are", "was", "were", "a", "an",
+        "and", "or", "of", "in", "on", "to", "for",
+        "from", "with", "by", "using", "explain",
+        "describe", "show", "me", "please", "what",
+        "how", "why", "about"
+    }
+
+    # Query ko individual words mein divide karna.
+    words = re.findall(r"\b[a-zA-Z0-9]+\b", lower_query)
+
+    # Unnecessary words remove karke keywords prepare karna.
+    keywords = [
+        word for word in words
+        if word not in stop_words
+        and not any(
+            word in terms
+            for terms in SUPPORTED_MODALITIES.values()
+        )
+    ]
+
+    # Agar keywords empty hain toh original query use karna.
+    if not keywords:
+        keywords = words
+
+    # Final structured retrieval plan create karna.
+    retrieval_plan = {
+        "original_query": clean_query,
+        "keywords": list(dict.fromkeys(keywords)),
+        "modality_filters": selected_modalities,
+        "top_k": k,
+        "strategy": (
+            "modality_filtered"
+            if selected_modalities
+            else "search_all_modalities"
+        )
+    }
+
+    # Prepared retrieval plan return karna.
+    return retrieval_plan
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\agents\synthesis_writer.py ==========
+
+
+# Existing RAG answer generator import karna.
+from rag.answer_generator import generate_answer
+
+# Existing quality validator import karna.
+from agents.quality_validator import validate_answer
+
+
+# Evidence ke basis par final answer generate karna.
+def synthesize_answer(question, evidence, llm):
+
+    # Existing RAG generator se answer generate karna.
+    generated_result = generate_answer(
+        question,
+        evidence,
+        llm
+    )
+
+    # Check karna ki generator ne dictionary return ki hai.
+    if isinstance(generated_result, dict):
+
+        # Dictionary se generated answer extract karna.
+        answer = generated_result.get("answer", "")
+
+        # Generator se available evidence gaps extract karna.
+        evidence_gaps = generated_result.get("evidence_gaps")
+
+    else:
+
+        # Direct AI response ko answer variable mein store karna.
+        answer = generated_result
+
+        # Evidence gaps available nahi hain.
+        evidence_gaps = None
+
+    # Existing validator se answer ki quality check karna.
+    validation = validate_answer(
+        answer,
+        evidence
+    )
+
+    # Final structured synthesis result create karna.
+    result = {
+        "question": question,
+        "answer": answer,
+        "evidence_count": len(evidence or []),
+        "validation": validation,
+        "evidence_gaps": evidence_gaps,
+        "status": (
+            "validated"
+            if validation["is_valid"]
+            else "needs_review"
+        )
+    }
+
+    # Final result return karna.
+    return result
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\agents\__init__.py ==========
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\dashboard\analytics_page.py ==========
+
+
+# Streamlit library import karna.
+import streamlit as st
+
+# Pandas library import karna.
+import pandas as pd
+
+# Plotly chart library import karna.
+import plotly.express as px
+
+
+# Learning analytics page display karne ke liye function.
+def render_analytics_page():
+
+    # Dashboard ka main heading.
+    st.title("Learning Analytics Dashboard")
+
+    # Sample student data create karna.
+    student_data = pd.DataFrame([
+        {
+            "Student": "Student 1",
+            "Quiz Score": 85,
+            "Study Hours": 12,
+            "Activities": 20,
+            "Difficulties": 1,
+            "Recommendation": "Explore advanced ML"
+        },
+        {
+            "Student": "Student 2",
+            "Quiz Score": 45,
+            "Study Hours": 5,
+            "Activities": 10,
+            "Difficulties": 3,
+            "Recommendation": "Revise Python basics"
+        },
+        {
+            "Student": "Student 3",
+            "Quiz Score": 70,
+            "Study Hours": 9,
+            "Activities": 16,
+            "Difficulties": 2,
+            "Recommendation": "Practice SQL queries"
+        }
+    ])
+
+    # All Students aur individual students ki list banana.
+    student_options = ["All Students"] + student_data["Student"].tolist()
+
+    # Student selector display karna.
+    selected_student = st.selectbox(
+        "Select Student",
+        student_options
+    )
+
+    # Agar All Students select kiya gaya.
+    if selected_student == "All Students":
+
+        # Complete student dataset use karna.
+        filtered_data = student_data.copy()
+
+    # Agar individual student select kiya gaya.
+    else:
+
+        # Sirf selected student ka data filter karna.
+        filtered_data = student_data[
+            student_data["Student"] == selected_student
+        ]
+
+    # Dashboard metrics ke liye columns banana.
+    col1, col2, col3 = st.columns(3)
+
+    # Average quiz score calculate karna.
+    average_score = filtered_data["Quiz Score"].mean()
+
+    # Total study hours calculate karna.
+    total_hours = filtered_data["Study Hours"].sum()
+
+    # Total learning activities calculate karna.
+    total_activities = filtered_data["Activities"].sum()
+
+    # Average score display karna.
+    col1.metric("Average Quiz Score", f"{average_score:.1f}%")
+
+    # Study hours display karna.
+    col2.metric("Study Hours", f"{total_hours}")
+
+    # Learning activities display karna.
+    col3.metric("Activities Completed", f"{total_activities}")
+
+    # Performance chart ka heading.
+    st.subheader("Student Performance")
+
+    # Quiz scores ka bar chart banana.
+    performance_chart = px.bar(
+        filtered_data,
+        x="Student",
+        y="Quiz Score",
+        title="Quiz Performance"
+    )
+
+    # Chart dashboard par display karna.
+    st.plotly_chart(performance_chart, use_container_width=True)
+
+    # Learning activity chart ka heading.
+    st.subheader("Learning Activity")
+
+    # Study hours ka chart banana.
+    activity_chart = px.bar(
+        filtered_data,
+        x="Student",
+        y="Study Hours",
+        title="Study Hours"
+    )
+
+    # Activity chart display karna.
+    st.plotly_chart(activity_chart, use_container_width=True)
+
+    # Detected difficulties ka heading.
+    st.subheader("Detected Learning Difficulties")
+
+    # Difficulty information display karna.
+    st.dataframe(
+        filtered_data[
+            ["Student", "Difficulties"]
+        ],
+        use_container_width=True
+    )
+
+    # AI recommendations ka heading.
+    st.subheader("AI Recommendations")
+
+    # Har selected student ki recommendation display karna.
+    st.dataframe(
+        filtered_data[
+            ["Student", "Recommendation"]
+        ],
+        use_container_width=True
+    )
+
+    # Filtered dataset future integration ke liye return karna.
+    return filtered_data
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\dashboard\query_page.py ==========
+
+
+# Streamlit library import karna.
+import streamlit as st
+
+
+# Query page display karne ke liye function.
+def render_query_page():
+
+    # Page ka heading display karna.
+    st.title("Unified Query Workspace")
+
+    # Page ka description display karna.
+    st.write("Ask questions about your uploaded learning materials.")
+
+    # User se question input lena.
+    user_query = st.text_area(
+        "Enter your question",
+        placeholder="Example: Explain machine learning."
+    )
+
+    # User ko query submit karne ka button dena.
+    submit_query = st.button("Submit Query")
+
+    # Check karna ki button click hua hai ya nahi.
+    if submit_query:
+
+        # Check karna ki user ne question enter kiya hai ya nahi.
+        if user_query.strip():
+
+            # Abhi RAG integration pending hone ka message.
+            st.info("Your question has been received.")
+
+            # Enter ki gayi query display karna.
+            st.write("Your Question:", user_query)
+
+            # Future RAG integration ke liye placeholder.
+            st.warning(
+                "Answer generation will be connected "
+                "during final integration."
+            )
+
+        # Agar user ne empty query submit ki.
+        else:
+
+            # User ko question enter karne ke liye inform karna.
+            st.error("Please enter a question.")
+
+    # Query ko future integration ke liye return karna.
+    return user_query
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\dashboard\review_page.py ==========
+
+
+# Streamlit library import karna.
+import streamlit as st
+
+# Existing review manager import karna.
+from review.review_manager import review_recommendation
+
+
+# Review dashboard display karne ke liye function.
+def render_review_page():
+
+    # Dashboard heading display karna.
+    st.title("Recommendation Review Dashboard")
+
+    # Sample AI recommendations create karna.
+    recommendations = [
+        "Revise Python fundamentals",
+        "Practice SQL queries",
+        "Explore Machine Learning basics"
+    ]
+
+    # Har recommendation ke liye review interface banana.
+    for index, recommendation in enumerate(recommendations):
+
+        # Recommendation ko separate section mein display karna.
+        with st.container():
+
+            # Recommendation heading display karna.
+            st.subheader(f"Recommendation {index + 1}")
+
+            # Recommendation ka text display karna.
+            st.write(recommendation)
+
+            # Approve aur reject buttons ke liye columns banana.
+            col1, col2 = st.columns(2)
+
+            # Approve button display karna.
+            with col1:
+
+                # Button click hone par recommendation approve karna.
+                if st.button("Approve", key=f"approve_{index}"):
+
+                    # Review manager ko approved status bhejna.
+                    result = review_recommendation(
+                        recommendation,
+                        "approved"
+                    )
+
+                    # Review result display karna.
+                    st.success(result["message"] if "message" in result else "Recommendation approved.")
+
+            # Reject button display karna.
+            with col2:
+
+                # Button click hone par recommendation reject karna.
+                if st.button("Reject", key=f"reject_{index}"):
+
+                    # Review manager ko rejected status bhejna.
+                    result = review_recommendation(
+                        recommendation,
+                        "rejected"
+                    )
+
+                    # Review result display karna.
+                    st.warning(result["message"] if "message" in result else "Recommendation rejected.")
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\dashboard\upload_page.py ==========
+
+
+# Streamlit library import karna.
+import streamlit as st
+
+
+# Supported multimodal file formats define karna.
+SUPPORTED_FORMATS = [
+    "pdf",
+    "png",
+    "jpg",
+    "jpeg",
+    "wav",
+    "mp3",
+    "mp4",
+    "avi"
+]
+
+
+# Upload page display karne ke liye function.
+def render_upload_page():
+
+    # Page ka main heading display karna.
+    st.title("Multimodal Asset Intake Console")
+
+    # Page ka short description display karna.
+    st.write("Upload your learning documents and media files.")
+
+    # User ko multiple files upload karne ka option dena.
+    uploaded_files = st.file_uploader(
+        "Choose your files",
+        type=SUPPORTED_FORMATS,
+        accept_multiple_files=True
+    )
+
+    # Check karna ki user ne files upload ki hain ya nahi.
+    if uploaded_files:
+
+        # Upload section ka heading display karna.
+        st.subheader("Uploaded Asset Details")
+
+        # Har uploaded file ki details check karna.
+        for uploaded_file in uploaded_files:
+
+            # File ka size bytes se KB mein convert karna.
+            file_size = uploaded_file.size / 1024
+
+            # Har file ki details ek expandable section mein dikhana.
+            with st.expander(uploaded_file.name):
+
+                # File ka original name display karna.
+                st.write("File Name:", uploaded_file.name)
+
+                # File ka format display karna.
+                st.write("File Type:", uploaded_file.type)
+
+                # File ka size display karna.
+                st.write("File Size:", f"{file_size:.2f} KB")
+
+                # File upload interface tak receive hone ka status.
+                st.success("File received successfully.")
+
+        # Total uploaded files count display karna.
+        st.info(f"Total uploaded files: {len(uploaded_files)}")
+
+        # Abhi permanent storage aur ingestion integration pending hai.
+        st.warning(
+            "Files are currently available in the upload interface. "
+            "Permanent storage will be connected during final integration."
+        )
+
+    # Agar koi file upload nahi hui.
+    else:
+
+        # User ko upload karne ke liye instruction dena.
+        st.info("Please upload at least one file.")
+
+    # Uploaded files ko future integration ke liye return karna.
+    return uploaded_files
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\database\chroma_manager.py ==========
+
+# Existing FAISS functions import karna.
+from rag.vector_store import (
+    create_vector_store,
+    save_vector_store,
+    load_vector_store,
+    search_vector_store
+)
+
+
+# FAISS database create karna.
+def create_database(chunks):
+
+    # Chunks se FAISS vector store create karna.
+    vector_store = create_vector_store(chunks)
+
+    # Created database return karna.
+    return vector_store
+
+
+# FAISS database save karna.
+def save_database(vector_store):
+
+    # Vector store ko local storage mein save karna.
+    save_vector_store(vector_store)
+
+
+# Saved FAISS database load karna.
+def load_database():
+
+    # Existing vector store load karna.
+    vector_store = load_vector_store()
+
+    # Loaded database return karna.
+    return vector_store
+
+
+# Database mein modality-based similarity search karna.
+def search_database(
+    vector_store,
+    query,
+    k=3,
+    modality_filters=None
+):
+
+    # FAISS search function ko modality filters pass karna.
+    results = search_vector_store(
+        vector_store,
+        query,
+        k,
+        modality_filters
+    )
+
+    # Search results return karna.
+    return results
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\database\__init__.py ==========
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\embeddings\image_embeddings.py ==========
+
+
+from sentence_transformers import SentenceTransformer
+from PIL import Image
+
+
+# Image embedding model select karna.
+MODEL_NAME = "clip-ViT-B-32"
+
+
+# CLIP model load karna.
+model = SentenceTransformer(MODEL_NAME)
+
+
+def generate_image_embeddings(image_paths):
+
+    # Images load karne ke liye empty list.
+    images = []
+
+    # Har image ka path process karna.
+    for image_path in image_paths:
+
+        # Image open karke RGB format mein convert karna.
+        image = Image.open(image_path).convert("RGB")
+
+        # Loaded image ko list mein add karna.
+        images.append(image)
+
+    # Images ko numerical vectors mein convert karna.
+    embeddings = model.encode(
+        images,
+        convert_to_numpy=True,
+        normalize_embeddings=True
+    )
+
+    # Generated image embeddings return karna.
+    return embeddings
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\embeddings\text_embeddings.py ==========
+
+
+from sentence_transformers import SentenceTransformer
+
+
+# Local text embedding model select karna.
+MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
+
+
+# Embedding model load karna.
+model = SentenceTransformer(MODEL_NAME)
+
+
+def generate_text_embeddings(chunks):
+
+    # Har chunk se text extract karna.
+    texts = [chunk["chunk_text"] for chunk in chunks]
+
+    # Text ko numerical vectors mein convert karna.
+    embeddings = model.encode(
+        texts,
+        convert_to_numpy=True,
+        normalize_embeddings=True
+    )
+
+    # Generated embeddings return karna.
+    return embeddings
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\embeddings\__init__.py ==========
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\ingestion\asset_registry.py ==========
+
+
+import sqlite3
+from pathlib import Path
+from uuid import uuid4
+from datetime import datetime
+
+
+# Database file ka location define kar rahe hain.
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATABASE_PATH = BASE_DIR / "data" / "asset_registry.db"
+
+
+# SQLite database aur assets table create karne ke liye.
+def create_database():
+
+    # Database folder exist nahi karta toh create karenge.
+    DATABASE_PATH.parent.mkdir(parents=True, exist_ok=True)
+
+    # Database se connection establish kar rahe hain.
+    connection = sqlite3.connect(DATABASE_PATH)
+
+    # SQL queries execute karne ke liye cursor bana rahe hain.
+    cursor = connection.cursor()
+
+    # Assets table create kar rahe hain agar pehle se exist nahi karti.
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS assets (
+
+            asset_id TEXT PRIMARY KEY,
+            filename TEXT NOT NULL,
+            modality TEXT NOT NULL,
+            owner TEXT NOT NULL,
+            permission_scope TEXT NOT NULL,
+            processing_status TEXT NOT NULL,
+            created_at TEXT NOT NULL
+
+        )
+    """)
+
+    # Database changes save kar rahe hain.
+    connection.commit()
+
+    # Database connection close kar rahe hain.
+    connection.close()
+
+
+# New asset ko database mein register karne ke liye.
+def register_asset(filename, modality, owner, permission_scope):
+
+    # Har asset ke liye unique ID generate kar rahe hain.
+    asset_id = str(uuid4())
+
+    # Database connection create kar rahe hain.
+    connection = sqlite3.connect(DATABASE_PATH)
+
+    # SQL queries execute karne ke liye cursor bana rahe hain.
+    cursor = connection.cursor()
+
+    # Asset ki details database mein insert kar rahe hain.
+    cursor.execute("""
+        INSERT INTO assets (
+            asset_id,
+            filename,
+            modality,
+            owner,
+            permission_scope,
+            processing_status,
+            created_at
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    """, (
+        asset_id,
+        filename,
+        modality,
+        owner,
+        permission_scope,
+        "uploaded",
+        datetime.now().isoformat()
+    ))
+
+    # Registered asset ki details save kar rahe hain.
+    connection.commit()
+
+    # Database connection close kar rahe hain.
+    connection.close()
+
+    # Generated unique asset ID return kar rahe hain.
+    return asset_id
+
+
+# Database mein registered saare assets retrieve karne ke liye.
+def get_all_assets():
+
+    # Database connection create kar rahe hain.
+    connection = sqlite3.connect(DATABASE_PATH)
+
+    # SQL queries execute karne ke liye cursor bana rahe hain.
+    cursor = connection.cursor()
+
+    # Saare assets latest registration ke order mein retrieve kar rahe hain.
+    cursor.execute(
+        "SELECT * FROM assets ORDER BY created_at DESC"
+    )
+
+    # Database se saare records fetch kar rahe hain.
+    assets = cursor.fetchall()
+
+    # Database connection close kar rahe hain.
+    connection.close()
+
+    # Retrieved assets return kar rahe hain.
+    return assets
+
+
+# Check karne ke liye ki user ko asset access karne ki permission hai ya nahi.
+def check_asset_permission(asset_id, user):
+
+    # Database connection create kar rahe hain.
+    connection = sqlite3.connect(DATABASE_PATH)
+
+    # SQL queries execute karne ke liye cursor bana rahe hain.
+    cursor = connection.cursor()
+
+    # Given asset ki owner aur permission details retrieve kar rahe hain.
+    cursor.execute("""
+        SELECT owner, permission_scope
+        FROM assets
+        WHERE asset_id = ?
+    """, (asset_id,))
+
+    # Matching asset ka record fetch kar rahe hain.
+    result = cursor.fetchone()
+
+    # Database connection close kar rahe hain.
+    connection.close()
+
+    # Asset database mein nahi mila toh access deny karenge.
+    if result is None:
+        return False
+
+    # Database se owner aur permission scope nikal rahe hain.
+    owner, permission_scope = result
+
+    # Owner ya public asset ko access allow kar rahe hain.
+    if owner == user or permission_scope == "public":
+        return True
+
+    # Baaki users ke liye access deny kar rahe hain.
+    return False
+
+
+# Asset ka processing status update karne ke liye.
+def update_asset_status(asset_id, new_status):
+
+    # Database connection create kar rahe hain.
+    connection = sqlite3.connect(DATABASE_PATH)
+
+    # SQL queries execute karne ke liye cursor bana rahe hain.
+    cursor = connection.cursor()
+
+    # Given asset ka processing status update kar rahe hain.
+    cursor.execute("""
+        UPDATE assets
+        SET processing_status = ?
+        WHERE asset_id = ?
+    """, (new_status, asset_id))
+
+    # Updated status database mein save kar rahe hain.
+    connection.commit()
+
+    # Check kar rahe hain ki koi record update hua ya nahi.
+    updated_rows = cursor.rowcount
+
+    # Database connection close kar rahe hain.
+    connection.close()
+
+    # Update successful hone par True return kar rahe hain.
+    return updated_rows > 0
+
+
+# Database se asset record aur uploaded file delete karne ke liye.
+def delete_asset(asset_id):
+
+    # Database connection create kar rahe hain.
+    connection = sqlite3.connect(DATABASE_PATH)
+
+    # SQL queries execute karne ke liye cursor bana rahe hain.
+    cursor = connection.cursor()
+
+    # Asset ka filename retrieve kar rahe hain.
+    cursor.execute(
+        "SELECT filename FROM assets WHERE asset_id = ?",
+        (asset_id,)
+    )
+
+    # Matching asset ka record fetch kar rahe hain.
+    result = cursor.fetchone()
+
+    # Asset nahi mila toh deletion stop kar rahe hain.
+    if result is None:
+        connection.close()
+        return False
+
+    # Database record se filename nikal rahe hain.
+    filename = result[0]
+
+    # Database se asset ka record delete kar rahe hain.
+    cursor.execute(
+        "DELETE FROM assets WHERE asset_id = ?",
+        (asset_id,)
+    )
+
+    # Database changes save kar rahe hain.
+    connection.commit()
+
+    # Database connection close kar rahe hain.
+    connection.close()
+
+    # Uploaded file ka actual path define kar rahe hain.
+    file_path = BASE_DIR / "data" / "uploads" / filename
+
+    # File exist karti hai toh physical file delete kar rahe hain.
+    if file_path.exists():
+        file_path.unlink()
+
+    # Successful deletion par True return kar rahe hain.
+    return True
+
+
+# Module import hone par database automatically create kar rahe hain.
+create_database()
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\ingestion\file_validator.py ==========
+
+
+from pathlib import Path
+
+
+# Supported file formats
+SUPPORTED_FORMATS = {
+    ".mp4": "video",
+    ".mov": "video",
+    ".mp3": "audio",
+    ".wav": "audio",
+    ".pdf": "document",
+    ".png": "image",
+    ".jpg": "image",
+    ".jpeg": "image",
+    ".txt": "text",
+    ".csv": "quiz"
+}
+
+
+# Maximum file size: 200 MB
+MAX_FILE_SIZE = 200 * 1024 * 1024
+
+
+def validate_file(file_path):
+
+    file_path = Path(file_path)
+
+    # Check whether file exists
+    if not file_path.exists():
+        return False, "File does not exist", None
+
+    # Check whether it is a file
+    if not file_path.is_file():
+        return False, "Path is not a file", None
+
+    # Check file extension
+    extension = file_path.suffix.lower()
+
+    if extension not in SUPPORTED_FORMATS:
+        return False, "Unsupported file format", None
+
+    # Check empty file
+    if file_path.stat().st_size == 0:
+        return False, "File is empty", None
+
+    # Check maximum size
+    if file_path.stat().st_size > MAX_FILE_SIZE:
+        return False, "File exceeds 200 MB limit", None
+
+    modality = SUPPORTED_FORMATS[extension]
+
+    return True, "File validation successful", modality
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\ingestion\__init__.py ==========
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\audio_metadata.py ==========
+
+
+import json  # Metadata ko JSON format mein save karne ke liye.
+
+from pathlib import Path  # Project folders aur file paths handle karne ke liye.
+
+from datetime import datetime, timezone  # Processing ka UTC time record karne ke liye.
+
+
+def create_audio_metadata(audio_path, asset_id, segments):  # Audio ki final metadata create karne ke liye.
+
+    audio_path = Path(audio_path)  # Audio file ka path convert kar rahe hain.
+
+    project_dir = Path(__file__).resolve().parent.parent  # Project ka main folder identify kar rahe hain.
+
+    output_dir = project_dir / "data" / "processed" / asset_id  # Audio ka processed folder define kar rahe hain.
+
+    output_dir.mkdir(parents=True, exist_ok=True)  # Folder missing hone par create kar rahe hain.
+
+    metadata = {  # Final audio metadata dictionary bana rahe hain.
+
+        "asset_id": asset_id,  # Audio ki unique ID save kar rahe hain.
+
+        "source_file": audio_path.name,  # Original audio filename save kar rahe hain.
+
+        "modality": "audio",  # Asset ki modality define kar rahe hain.
+
+        "total_segments": len(segments),  # Total transcript segments count kar rahe hain.
+
+        "segments": segments,  # Saare transcript segments aur timestamps save kar rahe hain.
+
+        "processing_status": "completed",  # Processing status save kar rahe hain.
+
+        "processed_at": datetime.now(timezone.utc).isoformat()  # Processing ka UTC timestamp save kar rahe hain.
+
+    }
+
+    output_path = output_dir / "metadata.json"  # Metadata JSON file ka path define kar rahe hain.
+
+    with open(output_path, "w", encoding="utf-8") as file:  # JSON file write mode mein open kar rahe hain.
+
+        json.dump(metadata, file, indent=4, ensure_ascii=False)  # Readable JSON format mein save kar rahe hain.
+
+    return metadata  # Final metadata return kar rahe hain.
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\audio_processor.py ==========
+
+
+from faster_whisper import WhisperModel
+# Faster-Whisper se speech-to-text generate karne ke liye.
+
+from pathlib import Path
+# Audio file ka path handle karne ke liye.
+
+
+model = WhisperModel("base", device="cpu", compute_type="int8")
+# Base model CPU par load kar rahe hain.
+
+
+def process_audio(audio_path, asset_id):
+    # Audio processing function define kar rahe hain.
+
+    audio_path = Path(audio_path)
+    # Audio path ko Path object mein convert kar rahe hain.
+
+    if not audio_path.exists():
+        # Check kar rahe hain ki audio file available hai ya nahi.
+        raise FileNotFoundError(f"Audio not found: {audio_path}")
+        # File missing hone par error denge.
+
+    segments, info = model.transcribe(str(audio_path), language="en")
+    # Audio ko transcript segments mein convert kar rahe hain.
+
+    segments_data = []
+    # Transcript segments store karne ke liye list.
+
+    for index, segment in enumerate(segments, start=1):
+        # Har transcript segment read kar rahe hain.
+
+        segments_data.append({
+            # Segment ki structured information save kar rahe hain.
+
+            "asset_id": asset_id,
+            # Original audio ki unique ID.
+
+            "source_file": audio_path.name,
+            # Original audio filename.
+
+            "modality": "audio",
+            # Asset ki modality define kar rahe hain.
+
+            "segment_id": f"{asset_id}-SEG-{index}",
+            # Unique segment ID bana rahe hain.
+
+            "start_time": segment.start,
+            # Segment ka starting timestamp.
+
+            "end_time": segment.end,
+            # Segment ka ending timestamp.
+
+            "text": segment.text.strip()
+            # Recognized speech text save kar rahe hain.
+        })
+
+    return segments_data
+    # Saare transcript segments return kar rahe hain.
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\chunk_metadata.py ==========
+
+
+import json  # Chunk metadata ko JSON mein save karne ke liye.
+from pathlib import Path  # File aur folder paths handle karne ke liye.
+from datetime import datetime, timezone  # UTC processing time record karne ke liye.
+
+
+def create_chunk_metadata(asset_id, chunks):
+
+    # Main project folder identify kar rahe hain.
+    project_dir = Path(__file__).resolve().parent.parent
+
+    # Current asset ka processed folder select kar rahe hain.
+    output_dir = project_dir / "data" / "processed" / asset_id
+
+    # Folder missing hone par create kar rahe hain.
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Chunk metadata dictionary create kar rahe hain.
+    metadata = {
+
+        "asset_id": asset_id,  # Original asset ki unique ID.
+
+        "modality": "document",  # Chunk ka content type.
+
+        "total_chunks": len(chunks),  # Total chunks count.
+
+        "source_file": chunks[0]["source_file"] if chunks else None,  # Original filename.
+
+        "chunk_ids": [item["chunk_id"] for item in chunks],  # All chunk IDs.
+
+        "page_numbers": sorted(set(
+            item["page_number"] for item in chunks
+        )),  # Unique source page numbers.
+
+        "status": "chunked" if chunks else "empty",  # Chunking status.
+
+        "created_at": datetime.now(timezone.utc).isoformat()  # UTC timestamp.
+    }
+
+    # Metadata JSON file ka path define kar rahe hain.
+    output_path = output_dir / "chunk_metadata.json"
+
+    # Metadata ko JSON file mein save kar rahe hain.
+    output_path.write_text(
+        json.dumps(metadata, indent=4),
+        encoding="utf-8"
+    )
+
+    # Created metadata return kar rahe hain.
+    return metadata
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\discussion_metadata.py ==========
+
+
+import json  # Metadata JSON mein save karne ke liye.
+from pathlib import Path  # Folder aur file paths handle karne ke liye.
+from datetime import datetime, timezone  # UTC timestamp record karne ke liye.
+
+
+def create_discussion_metadata(asset_id, segments):  # Discussion metadata function.
+
+    project_dir = Path(__file__).resolve().parent.parent  # Main project folder identify kar rahe hain.
+
+    output_dir = project_dir / "data" / "processed" / asset_id  # Discussion output folder select kar rahe hain.
+
+    output_dir.mkdir(parents=True, exist_ok=True)  # Folder create kar rahe hain.
+
+    metadata = {
+        "asset_id": asset_id,  # Discussion asset ki unique ID.
+        "modality": "discussion",  # Asset type.
+        "total_segments": len(segments),  # Total unique discussions.
+        "source_file": segments[0]["source_file"] if segments else None,  # Original filename.
+        "status": "preprocessed" if segments else "empty",  # Processing status.
+        "segment_ids": [item["segment_id"] for item in segments],  # Sabhi segment IDs.
+        "processed_at": datetime.now(timezone.utc).isoformat()  # UTC processing time.
+    }
+
+    output_path = output_dir / "metadata.json"  # Metadata file location.
+
+    output_path.write_text(json.dumps(metadata, indent=4), encoding="utf-8")  # JSON file save.
+
+    return metadata  # Metadata return kar rahe hain.
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\discussion_processor.py ==========
+
+
+import json  # Discussion data read karne ke liye.
+import re  # Extra spaces clean karne ke liye.
+from pathlib import Path  # File paths handle karne ke liye.
+
+
+def process_discussion(discussion_path, asset_id):  # Discussion preprocessing function.
+
+    discussion_path = Path(discussion_path)  # File path convert kar rahe hain.
+
+    if not discussion_path.exists():  # Check kar rahe hain file available hai ya nahi.
+        raise FileNotFoundError(f"File not found: {discussion_path}")  # Missing file par error.
+
+    data = json.loads(discussion_path.read_text(encoding="utf-8"))  # Discussion JSON read kar rahe hain.
+
+    segments = []  # Processed discussions store karne ke liye.
+
+    seen = set()  # Duplicate discussions track karne ke liye.
+
+    for item in data["discussions"]:  # Har discussion process kar rahe hain.
+
+        content = re.sub(r"\s+", " ", item["content"]).strip()  # Extra spaces remove kar rahe hain.
+
+        if content and content.lower() not in seen:  # Empty aur duplicate content skip kar rahe hain.
+
+            seen.add(content.lower())  # Content ko duplicate tracking mein add kar rahe hain.
+
+            segments.append({
+                "asset_id": asset_id,  # Original discussion asset ID.
+                "segment_id": f"{asset_id}-DISC-{len(segments) + 1}",  # Unique segment ID.
+                "source_file": discussion_path.name,  # Original filename.
+                "author": item.get("author"),  # Discussion author record kar rahe hain.
+                "content": content,  # Clean discussion content.
+                "modality": "discussion"  # Asset modality define kar rahe hain.
+            })
+
+    return segments  # Processed discussion segments return kar rahe hain.
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\image_metadata.py ==========
+
+
+import json  # Metadata ko JSON format mein save karne ke liye.
+
+from pathlib import Path  # Project folders aur file paths handle karne ke liye.
+
+from datetime import datetime, timezone  # Processing ka UTC time record karne ke liye.
+
+
+def create_image_metadata(image_info, extracted_text):  # Image information aur OCR text combine karne ke liye.
+
+    asset_id = image_info["asset_id"]  # Image ki unique ID retrieve kar rahe hain.
+
+    project_dir = Path(__file__).resolve().parent.parent  # Project ka main folder identify kar rahe hain.
+
+    output_dir = project_dir / "data" / "processed" / asset_id  # Image ka processed data folder define kar rahe hain.
+
+    output_dir.mkdir(parents=True, exist_ok=True)  # Folder missing hone par create kar rahe hain.
+
+    metadata = {  # Final image metadata dictionary bana rahe hain.
+
+        **image_info,  # Image ki saari basic information include kar rahe hain.
+
+        "extracted_text": extracted_text,  # OCR se mila text add kar rahe hain.
+
+        "processing_status": "completed",  # Processing successful hone ka status save kar rahe hain.
+
+        "processed_at": datetime.now(timezone.utc).isoformat()  # Processing ka UTC timestamp save kar rahe hain.
+
+    }
+
+    output_path = output_dir / "metadata.json"  # Metadata JSON file ka path define kar rahe hain.
+
+    with open(output_path, "w", encoding="utf-8") as file:  # JSON file write mode mein open kar rahe hain.
+
+        json.dump(metadata, file, indent=4, ensure_ascii=False)  # Readable JSON format mein metadata save kar rahe hain.
+
+    return metadata  # Final metadata return kar rahe hain.
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\image_ocr.py ==========
+
+
+import pytesseract  # Tesseract OCR engine ko Python se use karne ke liye.
+
+from PIL import Image  # Image open karne ke liye.
+
+from pathlib import Path  # Image file path handle karne ke liye.
+# Tesseract OCR software ka Windows path set kar rahe hain.
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+
+def extract_image_text(image_path):  # Image se text extract karne ka function.
+
+    image_path = Path(image_path)  # Image path ko Path object mein convert kar rahe hain.
+
+    if not image_path.exists():  # Check kar rahe hain ki image available hai ya nahi.
+        raise FileNotFoundError(f"Image not found: {image_path}")  # Missing image par error denge.
+
+    with Image.open(image_path) as image:  # Image ko open kar rahe hain.
+
+        extracted_text = pytesseract.image_to_string(image)  # OCR se image ka readable text extract kar rahe hain.
+
+    return extracted_text.strip()  # Extra spaces remove karke text return kar rahe hain.
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\image_processor.py ==========
+
+
+
+from PIL import Image  # Image open aur process karne ke liye.
+
+from pathlib import Path  # Image file ka path handle karne ke liye.
+
+def process_image(image_path, asset_id):  # Image processing function define kar rahe hain.
+
+    image_path = Path(image_path)  # Image path ko Path object mein convert kar rahe hain.
+
+    if not image_path.exists():  # Check kar rahe hain ki image file exist karti hai ya nahi.
+        raise FileNotFoundError(f"Image not found: {image_path}")  # File missing hone par error denge.
+
+    with Image.open(image_path) as image:  # Image ko safely open kar rahe hain.
+
+        image_info = {  # Image ki basic information collect kar rahe hain.
+
+            "asset_id": asset_id,  # Image ki unique asset ID save kar rahe hain.
+
+            "source_file": image_path.name,  # Original image ka filename save kar rahe hain.
+
+            "modality": "image",  # Asset ki modality image define kar rahe hain.
+
+            "format": image.format,  # Image ka format JPEG, PNG etc. collect kar rahe hain.
+
+            "width": image.width,  # Image ki width pixels mein collect kar rahe hain.
+
+            "height": image.height,  # Image ki height pixels mein collect kar rahe hain.
+
+            "mode": image.mode,  # Image ka color mode RGB, RGBA etc. collect kar rahe hain.
+
+        }
+
+    return image_info  # Collected image information return kar rahe hain.
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\pdf_metadata.py ==========
+
+
+import json  # Metadata ko JSON format mein save karne ke liye.
+
+from pathlib import Path  # Project folders aur file paths handle karne ke liye.
+
+from datetime import datetime, timezone  # Processing ka UTC time record karne ke liye.
+
+
+def create_pdf_metadata(pdf_path, asset_id, pages):  # PDF ki final metadata create karne ka function.
+
+    pdf_path = Path(pdf_path)  # PDF file ka path convert kar rahe hain.
+
+    project_dir = Path(__file__).resolve().parent.parent  # Project ka main folder identify kar rahe hain.
+
+    output_dir = project_dir / "data" / "processed" / asset_id  # PDF ka processed data folder define kar rahe hain.
+
+    output_dir.mkdir(parents=True, exist_ok=True)  # Folder missing hone par create kar rahe hain.
+
+    metadata = {  # Final PDF metadata dictionary bana rahe hain.
+
+        "asset_id": asset_id,  # PDF ki unique ID save kar rahe hain.
+
+        "source_file": pdf_path.name,  # Original PDF filename save kar rahe hain.
+
+        "modality": "pdf",  # Asset ki modality define kar rahe hain.
+
+        "total_pages": len(pages),  # Processed PDF pages ki total counting kar rahe hain.
+
+        "pages": pages,  # Har page ka text, segment ID aur extraction method save kar rahe hain.
+
+        "processing_status": "completed",  # Processing ka status save kar rahe hain.
+
+        "processed_at": datetime.now(timezone.utc).isoformat()  # Processing ka UTC timestamp save kar rahe hain.
+
+    }
+
+    output_path = output_dir / "metadata.json"  # Metadata JSON file ka path define kar rahe hain.
+
+    with open(output_path, "w", encoding="utf-8") as file:  # JSON file write mode mein open kar rahe hain.
+
+        json.dump(metadata, file, indent=4, ensure_ascii=False)  # Readable JSON format mein data save kar rahe hain.
+
+    return metadata  # Final metadata return kar rahe hain.
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\pdf_processor.py ==========
+
+
+import fitz  # PDF pages read karne ke liye.
+
+import pytesseract  # Scanned pages se OCR text extract karne ke liye.
+
+from PIL import Image  # PDF page image ko OCR ke liye handle karne ke liye.
+
+from pathlib import Path  # File paths handle karne ke liye.
+
+import io  # PDF page image ko memory mein read karne ke liye.
+
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+
+def extract_pdf_pages(pdf_path, asset_id):  # PDF processing function.
+
+    pdf_path = Path(pdf_path)  # PDF path convert kar rahe hain.
+
+    if not pdf_path.exists():  # PDF file check kar rahe hain.
+        raise FileNotFoundError(f"PDF not found: {pdf_path}")  # Missing file par error.
+
+    pages_data = []  # Processed pages store karne ke liye list.
+
+    with fitz.open(pdf_path) as pdf:  # PDF open kar rahe hain.
+
+        for page_number, page in enumerate(pdf, start=1):  # Har page read kar rahe hain.
+
+            text = page.get_text("text").strip()  # Normal PDF text extract kar rahe hain.
+
+            extraction_method = "pymupdf"  # Default extraction method set kar rahe hain.
+
+            if not text:  # Agar page mein selectable text nahi mila.
+
+                pix = page.get_pixmap(dpi=200)  # PDF page ko image mein convert kar rahe hain.
+
+                image = Image.open(io.BytesIO(pix.tobytes("png")))  # Image ko memory se open kar rahe hain.
+
+                text = pytesseract.image_to_string(image).strip()  # OCR se scanned page ka text nikal rahe hain.
+
+                extraction_method = "tesseract_ocr"  # OCR method record kar rahe hain.
+
+            page_data = {  # Page ka structured metadata bana rahe hain.
+
+                "asset_id": asset_id,  # Original PDF ki unique ID.
+
+                "source_file": pdf_path.name,  # Original PDF filename.
+
+                "modality": "pdf",  # Asset modality.
+
+                "segment_id": f"{asset_id}-PAGE-{page_number}",  # Unique page segment ID.
+
+                "page_number": page_number,  # Original page number.
+
+                "text": text,  # Extracted page text.
+
+                "has_text": bool(text),  # Text available hai ya nahi.
+
+                "extraction_method": extraction_method  # Text kis method se nikla.
+
+            }
+
+            pages_data.append(page_data)  # Page data list mein add kar rahe hain.
+
+    return pages_data  # Saare processed pages return kar rahe hain.
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\quiz_metadata.py ==========
+
+
+import json  # Metadata ko JSON mein save karne ke liye.
+from pathlib import Path  # Folder aur file paths handle karne ke liye.
+from datetime import datetime, timezone  # UTC timestamp record karne ke liye.
+
+
+def create_quiz_metadata(asset_id, questions):  # Quiz metadata function.
+
+    project_dir = Path(__file__).resolve().parent.parent  # Main project folder identify kar rahe hain.
+
+    output_dir = project_dir / "data" / "processed" / asset_id  # Quiz output folder select kar rahe hain.
+
+    output_dir.mkdir(parents=True, exist_ok=True)  # Folder create kar rahe hain.
+
+    metadata = {
+        "asset_id": asset_id,  # Quiz ki unique ID.
+        "modality": "quiz",  # Asset type.
+        "total_questions": len(questions),  # Total unique questions.
+        "source_file": questions[0]["source_file"] if questions else None,  # Original filename.
+        "status": "preprocessed" if questions else "empty",  # Processing status.
+        "segment_ids": [item["segment_id"] for item in questions],  # Question IDs.
+        "processed_at": datetime.now(timezone.utc).isoformat()  # UTC processing time.
+    }
+
+    output_path = output_dir / "metadata.json"  # Metadata file location.
+
+    output_path.write_text(json.dumps(metadata, indent=4), encoding="utf-8")  # JSON save kar rahe hain.
+
+    return metadata  # Metadata return kar rahe hain.
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\quiz_processor.py ==========
+
+
+import json  # Quiz data read karne ke liye.
+from pathlib import Path  # File paths handle karne ke liye.
+
+
+def process_quiz(quiz_path, asset_id):  # Quiz preprocessing function.
+
+    quiz_path = Path(quiz_path)  # File path convert kar rahe hain.
+
+    if not quiz_path.exists():  # Check kar rahe hain file available hai ya nahi.
+        raise FileNotFoundError(f"Quiz file not found: {quiz_path}")  # File missing hone par error.
+
+    quiz_data = json.loads(quiz_path.read_text(encoding="utf-8"))  # JSON quiz data read kar rahe hain.
+
+    questions = []  # Processed questions store karne ke liye.
+
+    seen = set()  # Duplicate questions track karne ke liye.
+
+    for index, item in enumerate(quiz_data["questions"], start=1):  # Har question process kar rahe hain.
+
+        question = item["question"].strip()  # Question ke extra spaces remove kar rahe hain.
+
+        if question and question.lower() not in seen:  # Empty aur duplicate questions skip kar rahe hain.
+
+            seen.add(question.lower())  # Question ko duplicate tracking mein add kar rahe hain.
+
+            questions.append({
+                "asset_id": asset_id,  # Original quiz ki ID.
+                "segment_id": f"{asset_id}-QUESTION-{len(questions) + 1}",  # Unique question ID.
+                "source_file": quiz_path.name,  # Original quiz filename.
+                "question": question,  # Clean question.
+                "options": item.get("options", []),  # Question ke options.
+                "correct_answer": item.get("correct_answer"),  # Correct answer.
+                "modality": "quiz"  # Asset modality define kar rahe hain.
+            })
+
+    return questions  # Processed quiz questions return kar rahe hain.
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\text_chunker.py ==========
+
+
+from uuid import uuid4
+
+
+def create_text_chunks(
+    pages,
+    asset_id,
+    chunk_size=500,
+    overlap=50
+):
+
+    chunks = []
+
+    for page in pages:
+
+        text = page["text"]
+
+        start = 0
+
+        while start < len(text):
+
+            end = start + chunk_size
+
+            chunk_text = text[start:end].strip()
+
+            if chunk_text:
+
+                chunks.append({
+
+                    "chunk_id": str(uuid4()),
+
+                    "asset_id": asset_id,
+
+                    "source_file": page["source_file"],
+
+                    "segment_id": page.get("segment_id"),
+
+                    "page_number": page.get("page_number"),
+
+                    "modality": page.get("modality", "document"),
+
+                    "chunk_text": chunk_text
+
+                })
+
+            start = end - overlap
+
+    return chunks
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\text_metadata.py ==========
+
+
+import json  # Metadata ko JSON format mein save karne ke liye.
+from pathlib import Path  # Project folders aur file paths handle karne ke liye.
+from datetime import datetime, timezone  # Processing ka UTC time record karne ke liye.
+
+def create_text_metadata(asset_id, segments):  # Text processing ki metadata create kar rahe hain.
+
+    project_dir = Path(__file__).resolve().parent.parent  # Main project folder identify kar rahe hain.
+
+    output_dir = project_dir / "data" / "processed" / asset_id  # Current text asset ka output folder select kar rahe hain.
+
+    output_dir.mkdir(parents=True, exist_ok=True)  # Folder missing hone par create kar rahe hain.
+
+    metadata = {  # Text asset ki complete metadata dictionary bana rahe hain.
+
+        "asset_id": asset_id,  # Original text asset ki unique ID.
+
+        "modality": "text",  # Asset ka type text define kar rahe hain.
+
+        "total_segments": len(segments),  # Total processed segments count kar rahe hain.
+
+        "source_file": segments[0]["source_file"] if segments else None,  # Original filename record kar rahe hain.
+
+        "status": "preprocessed" if segments else "empty",  # Processing status record kar rahe hain.
+
+        "segment_ids": [item["segment_id"] for item in segments],  # Sabhi segment IDs collect kar rahe hain.
+
+        "processed_at": datetime.now(timezone.utc).isoformat()  # Processing ka UTC timestamp save kar rahe hain.
+    }
+
+    output_path = output_dir / "metadata.json"  # Metadata JSON file ka location define kar rahe hain.
+
+    output_path.write_text(json.dumps(metadata, indent=4), encoding="utf-8")  # Metadata JSON file mein save kar rahe hain.
+
+    return metadata  # Created metadata return kar rahe hain.
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\text_processor.py ==========
+
+
+import re  # Text cleaning ke liye.
+
+from pathlib import Path  # Text file ka path handle karne ke liye.
+
+
+def process_text(text_path, asset_id):  # Text preprocessing function define kar rahe hain.
+
+    text_path = Path(text_path)  # File path ko Path object mein convert kar rahe hain.
+
+    if not text_path.exists():  # Check kar rahe hain ki text file available hai ya nahi.
+        raise FileNotFoundError(f"Text file not found: {text_path}")  # Missing file par error denge.
+
+    content = text_path.read_text(encoding="utf-8")  # Text file ka content read kar rahe hain.
+
+    content = re.sub(r"\s+", " ", content).strip()  # Extra spaces aur line breaks clean kar rahe hain.
+
+    paragraphs = re.split(r"(?<=[.!?])\s+", content)  # Sentences ko separate segments mein divide kar rahe hain.
+
+    segments = []  # Clean text segments store karne ke liye list bana rahe hain.
+
+    seen = set()  # Duplicate sentences track karne ke liye set bana rahe hain.
+
+    for sentence in paragraphs:  # Har sentence ko process kar rahe hain.
+
+        sentence = sentence.strip()  # Sentence ke extra spaces remove kar rahe hain.
+
+        if sentence and sentence.lower() not in seen:  # Empty aur duplicate sentences skip kar rahe hain.
+
+            seen.add(sentence.lower())  # Sentence ko duplicate tracking mein add kar rahe hain.
+
+            segments.append({  # Structured text segment bana rahe hain.
+
+                "asset_id": asset_id,  # Original asset ki unique ID.
+
+                "source_file": text_path.name,  # Original text filename.
+
+                "modality": "text",  # Asset ki modality define kar rahe hain.
+
+                "segment_id": f"{asset_id}-SEG-{len(segments) + 1}",  # Unique segment ID bana rahe hain.
+
+                "text": sentence  # Clean sentence save kar rahe hain.
+
+            })
+
+    return segments  # Saare clean segments return kar rahe hain.
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\transcript_processor.py ==========
+
+
+from faster_whisper import WhisperModel
+# Faster-Whisper audio ko text mein convert karne ke liye hai.
+
+from pathlib import Path
+# File aur folder ke paths handle karne ke liye hai.
+
+from uuid import uuid4
+# Har transcript segment ko unique ID dene ke liye hai.
+
+
+def transcribe_video(video_path, asset_id):
+    # Ye function video ki audio ko transcript mein convert karega.
+
+    video_path = Path(video_path)
+    # Video path ko Path format mein convert kar rahe hain.
+
+    if not video_path.exists():
+        # Check kar rahe hain ki video file exist karti hai ya nahi.
+
+        raise FileNotFoundError("Video file not found")
+        # Video nahi mili to error show hoga.
+
+    project_dir = Path(__file__).resolve().parent.parent
+    # Project ka main folder identify kar rahe hain.
+
+    output_dir = project_dir / "data" / "processed" / asset_id / "transcripts"
+    # Transcript save karne ke liye output folder bana rahe hain.
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    # Folder nahi hai to automatically create kar rahe hain.
+
+    model = WhisperModel("base", device="cpu", compute_type="int8")
+    # Base Whisper model CPU par load kar rahe hain.
+
+    segments, info = model.transcribe(
+        str(video_path),
+        # Video file ko transcription ke liye de rahe hain.
+
+        beam_size=5,
+        # Transcription ke liye search quality setting de rahe hain.
+
+        vad_filter=True
+        # Unnecessary silence ko filter kar rahe hain.
+    )
+    # Video ki audio se transcript generate kar rahe hain.
+
+    transcript_segments = []
+    # Transcript segments store karne ke liye empty list bana rahe hain.
+
+    for segment in segments:
+        # Transcript ke har segment par loop chala rahe hain.
+
+        segment_info = {
+            "segment_id": f"SEG-{uuid4().hex[:8]}",
+            # Har transcript segment ko unique ID de rahe hain.
+
+            "asset_id": asset_id,
+            # Original video ki asset ID link kar rahe hain.
+
+            "start": round(segment.start, 2),
+            # Segment ka starting timestamp seconds mein save kar rahe hain.
+
+            "end": round(segment.end, 2),
+            # Segment ka ending timestamp seconds mein save kar rahe hain.
+
+            "text": segment.text.strip(),
+            # Recognized spoken words ko clean karke save kar rahe hain.
+
+            "modality": "video_transcript"
+            # Data ka modality type identify kar rahe hain.
+        }
+        # Current transcript segment ki metadata bana rahe hain.
+
+        transcript_segments.append(segment_info)
+        # Segment ko transcript list mein add kar rahe hain.
+
+    transcript_path = output_dir / "transcript.txt"
+    # Transcript text file ka path bana rahe hain.
+
+    with open(transcript_path, "w", encoding="utf-8") as file:
+        # UTF-8 encoding ke saath transcript file open kar rahe hain.
+
+        for segment in transcript_segments:
+            # Har transcript segment par loop chala rahe hain.
+
+            file.write(
+                f"[{segment['start']} - {segment['end']}] "
+                f"{segment['text']}\n"
+            )
+            # Timestamp aur spoken text file mein save kar rahe hain.
+
+    return transcript_segments
+    # Saare transcript segments return kar rahe hain.
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\video_aligner.py ==========
+
+
+import json
+# JSON file mein aligned data save karne ke liye library import kar rahe hain.
+
+from pathlib import Path
+# Output file ka location handle karne ke liye Path import kar rahe hain.
+
+
+def align_frames_with_transcript(frames, transcript_segments, asset_id, interval_seconds=5):
+    # Video frames aur transcript ko timestamps ke basis par connect kar rahe hain.
+
+    aligned_data = []
+    # Aligned information store karne ke liye empty list bana rahe hain.
+
+    for frame in frames:
+        # Har extracted video frame ko check kar rahe hain.
+
+        frame_time = frame["timestamp_seconds"]
+        # Frame ka timestamp already seconds mein hai, isliye conversion ki zaroorat nahi.
+        
+
+        window_end = frame_time + interval_seconds
+        # Frame ke timestamp se agle 5 seconds ka time window bana rahe hain.
+
+        matching_segments = []
+        # Matching transcript segments store karne ke liye empty list bana rahe hain.
+
+        for segment in transcript_segments:
+            # Har transcript segment ko check kar rahe hain.
+
+            if segment["start"] < window_end and segment["end"] >= frame_time:
+                # Check kar rahe hain ki transcript aur video ka time overlap karta hai ya nahi.
+
+                matching_segments.append({
+                    "segment_id": segment["segment_id"],
+                    # Transcript segment ki unique ID save kar rahe hain.
+
+                    "start": segment["start"],
+                    # Transcript ka starting timestamp save kar rahe hain.
+
+                    "end": segment["end"],
+                    # Transcript ka ending timestamp save kar rahe hain.
+
+                    "text": segment["text"]
+                    # Transcript ke spoken words save kar rahe hain.
+                })
+                # Matching transcript ki information list mein add kar rahe hain.
+
+        aligned_data.append({
+            "asset_id": asset_id,
+            # Original video ki asset ID save kar rahe hain.
+
+            "frame_id": frame["frame_id"],
+            # Extracted frame ki unique ID save kar rahe hain.
+
+            "timestamp": frame["timestamp_seconds"],
+            # Frame ka timestamp seconds mein JSON mein save kar rahe hain.,
+            # Video frame ka timestamp save kar rahe hain.
+
+            "frame_path": frame["frame_path"],
+            # Frame image ka location save kar rahe hain.
+
+            "modality": "video_frame_transcript",
+            # Aligned data ka modality type identify kar rahe hain.
+
+            "transcript_segments": matching_segments,
+            # Frame se related transcript segments save kar rahe hain.
+
+            "status": "matched" if matching_segments else "no_transcript_match"
+            # Match mila ya nahi, uska status save kar rahe hain.
+        })
+        # Current frame aur transcript ki combined information save kar rahe hain.
+
+    project_dir = Path(__file__).resolve().parent.parent
+    # Project ka main folder identify kar rahe hain.
+
+    output_dir = project_dir / "data" / "processed" / asset_id
+    # Aligned data save karne ka folder path bana rahe hain.
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    # Output folder nahi hai to automatically create kar rahe hain.
+
+    output_file = output_dir / "alignment.json"
+    # Alignment JSON file ka path bana rahe hain.
+
+    with open(output_file, "w", encoding="utf-8") as file:
+        # JSON file ko writing mode mein open kar rahe hain.
+
+        json.dump(aligned_data, file, indent=4, ensure_ascii=False)
+        # Aligned frames aur transcript ko readable JSON format mein save kar rahe hain.
+
+    return aligned_data
+    # Complete aligned data return kar rahe hain.
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\video_metadata.py ==========
+
+
+import json
+# Metadata ko JSON format mein save karne ke liye.
+
+from pathlib import Path
+# Project folders aur file paths handle karne ke liye.
+
+from datetime import datetime, timezone
+# Processing complete hone ka UTC time record karne ke liye.
+
+
+def create_video_metadata(asset_id, frames, segments, aligned_data):
+    # Video processing ke results se central metadata bana rahe hain.
+
+    project_dir = Path(__file__).resolve().parent.parent
+    # Project ka main folder identify kar rahe hain.
+
+    output_dir = project_dir / "data" / "processed" / asset_id
+    # Current video ke processed data ka folder select kar rahe hain.
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    # Folder missing hone par automatically create kar rahe hain.
+
+    matched_frames = sum(
+        1 for item in aligned_data if item["status"] == "matched"
+    )
+    # Kitne frames ke saath transcript match hua, uski counting kar rahe hain.
+
+    unmatched_frames = len(aligned_data) - matched_frames
+    # Kitne frames ke saath transcript match nahi hua, calculate kar rahe hain.
+
+    metadata = {
+        "asset_id": asset_id,
+        # Original video ki unique ID save kar rahe hain.
+
+        "modality": "video",
+        # Asset ka type video identify kar rahe hain.
+
+        "processing_status": "preprocessed",
+        # Video preprocessing complete hone ka status save kar rahe hain.
+
+        "total_frames": len(frames),
+        # Total extracted frames ki counting save kar rahe hain.
+
+        "total_transcript_segments": len(segments),
+        # Total transcript segments ki counting save kar rahe hain.
+
+        "total_aligned_frames": matched_frames,
+        # Transcript se match hue frames ki counting save kar rahe hain.
+
+        "unmatched_frames": unmatched_frames,
+        # Transcript match nahi hue frames ki counting save kar rahe hain.
+
+        "frame_interval_seconds": 5,
+        # Frames extract karne ka interval record kar rahe hain.
+
+        "source_file": frames[0]["source_file"] if frames else None,
+        # Available frame metadata se original video filename le rahe hain.
+
+        "processed_at": datetime.now(timezone.utc).isoformat()
+        # Processing ka UTC date aur time save kar rahe hain.
+    }
+    # Video processing ki complete summary bana rahe hain.
+
+    metadata_path = output_dir / "metadata.json"
+    # Metadata JSON file ka output path bana rahe hain.
+
+    with open(metadata_path, "w", encoding="utf-8") as file:
+        # Metadata file ko writing mode mein open kar rahe hain.
+
+        json.dump(metadata, file, indent=4, ensure_ascii=False)
+        # Metadata ko readable JSON format mein save kar rahe hain.
+
+    return metadata
+    # Complete metadata dictionary return kar rahe hain.
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\video_processor.py ==========
+
+
+import cv2
+# OpenCV library video ko read aur frames extract karne ke liye hai.
+
+from pathlib import Path
+# Path folders aur file locations handle karne ke liye hai.
+
+from uuid import uuid4
+# Har extracted frame ko unique ID dene ke liye hai.
+
+
+def extract_video_frames(video_path, asset_id, interval_seconds=5):
+    # Ye function video se fixed interval par frames extract karega.
+
+    video_path = Path(video_path)
+    # Video file ke path ko Path format mein convert kar rahe hain.
+
+    if not video_path.exists():
+        # Check kar rahe hain ki video file exist karti hai ya nahi.
+
+        raise FileNotFoundError("Video file not found")
+        # File nahi mili to error show hoga.
+
+    if video_path.suffix.lower() not in [".mp4", ".mov"]:
+        # Check kar rahe hain ki video MP4 ya MOV format mein hai.
+
+        raise ValueError("Only MP4 and MOV videos are supported")
+        # Doosra format hua to error show hoga.
+
+    if interval_seconds <= 0:
+        # Check kar rahe hain ki frame interval zero ya negative na ho.
+
+        raise ValueError("Interval must be greater than zero")
+        # Galat interval hone par error show hoga.
+
+    project_dir = Path(__file__).resolve().parent.parent
+    # Project ka main folder locate kar rahe hain.
+
+    output_dir = project_dir / "data" / "processed" / asset_id / "frames"
+    # Is video ke frames save karne ke liye folder ka path bana rahe hain.
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    # Folder exist nahi karta to automatically create hoga.
+
+    cap = cv2.VideoCapture(str(video_path))
+    # OpenCV ke through video open kar rahe hain.
+
+    if not cap.isOpened():
+        # Check kar rahe hain ki video successfully open hui ya nahi.
+
+        raise ValueError("Unable to open video")
+        # Video open nahi hui to error show hoga.
+
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    # Video ke frames per second (FPS) read kar rahe hain.
+
+    if fps <= 0:
+        # Check kar rahe hain ki FPS valid hai ya nahi.
+
+        cap.release()
+        # Video resource release kar rahe hain.
+
+        raise ValueError("Invalid video FPS")
+        # FPS invalid hua to error show hoga.
+
+    frame_step = max(1, round(fps * interval_seconds))
+    # Calculate kar rahe hain ki kitne frames skip karne hain.
+
+    extracted_frames = []
+    # Extracted frames ki information is list mein store hogi.
+
+    frame_index = 0
+    # Video ka frame counter zero se start hoga.
+
+    try:
+        # Video processing ko safely run karne ke liye try block.
+
+        while True:
+            # Jab tak video mein frames milte rahenge, loop chalega.
+
+            success, frame = cap.read()
+            # Video se next frame read kar rahe hain.
+
+            if not success:
+                # Agar frame nahi mila to video khatam ho gayi.
+
+                break
+                # Loop stop kar rahe hain.
+
+            if frame_index % frame_step == 0:
+                # Check kar rahe hain ki ye frame extract karna hai ya nahi.
+
+                timestamp = frame_index / fps
+                # Frame ka timestamp seconds mein calculate kar rahe hain.
+
+                frame_id = str(uuid4())
+                # Frame ko unique ID de rahe hain.
+
+                frame_name = f"frame_{frame_index:06d}.jpg"
+                # Frame ka filename create kar rahe hain.
+
+                frame_path = output_dir / frame_name
+                # Frame save karne ki location bana rahe hain.
+
+                saved = cv2.imwrite(str(frame_path), frame)
+                # Extracted image ko JPG file mein save kar rahe hain.
+
+                if not saved:
+                    # Check kar rahe hain ki image successfully save hui ya nahi.
+
+                    raise ValueError("Unable to save extracted frame")
+                    # Save failure hone par error show hoga.
+
+                extracted_frames.append({
+                    # Frame ki details list mein add kar rahe hain.
+
+                    "frame_id": frame_id,
+                    # Har frame ki unique identity.
+
+                    "asset_id": asset_id,
+                    # Original video ki asset identity.
+
+                    "source_file": video_path.name,
+                    # Original video ka filename.
+
+                    "timestamp_seconds": round(timestamp, 2),
+                    # Video mein frame kis time par tha.
+
+                    "frame_path": str(frame_path),
+                    # Extracted image ki file location.
+
+                    "modality": "video_frame"
+                    # Batata hai ki ye image video se extract hui hai.
+                })
+                # Frame ki saari metadata information complete.
+
+            frame_index += 1
+            # Agle frame ke liye counter increase kar rahe hain.
+
+    finally:
+        # Processing complete ho ya error aaye, ye block chalega.
+
+        cap.release()
+        # Video resource release kar rahe hain.
+
+    return extracted_frames
+    # Extracted frames ki complete information return kar rahe hain.
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\__init__.py ==========
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\rag\answer_generator.py ==========
+
+
+# Environment variables access karna.
+import os
+
+# .env file se API key load karna.
+from dotenv import load_dotenv
+
+# Gemini model import karna.
+from langchain_google_genai import ChatGoogleGenerativeAI
+
+# Prompt creation function import karna.
+from rag.prompt_templates import create_prompt
+
+
+# Environment variables load karna.
+load_dotenv()
+
+
+# Gemini LLM initialize karne ka function.
+def get_llm():
+
+    # API key environment se read karna.
+    api_key = os.getenv("GEMINI_API_KEY")
+
+    # API key missing hone par error dena.
+    if not api_key:
+        raise ValueError("GEMINI_API_KEY not found in .env")
+
+    # Gemini model initialize karna.
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-3.5-flash-lite",
+        google_api_key=api_key,
+        temperature=0
+    )
+
+    # Initialized model return karna.
+    return llm
+
+
+# GenAI answer generation function.
+def generate_answer(question, evidence, llm):
+
+    # Empty evidence check karna.
+    if not evidence:
+        return {
+            "answer": "Insufficient evidence to answer this question.",
+            "evidence_gaps": "No relevant evidence was retrieved."
+        }
+
+    # Structured prompt prepare karna.
+    prompt = create_prompt(question, evidence)
+
+    # LLM se answer generate karna.
+    response = llm.invoke(prompt)
+
+    # AI response content return karna.
+    if hasattr(response, "content"):
+        return response.content
+
+    # Final response return karna.
+    return response
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\rag\assistant.py ==========
+
+# Evidence retrieval function import karna.
+from retrieval.evidence_retriever import retrieve_evidence
+
+# Retrieval planner import karna.
+from agents.retrieval_planner import plan_retrieval
+
+# Synthesis writer import karna.
+from agents.synthesis_writer import synthesize_answer
+
+# Gemini initialization function import karna.
+from rag.answer_generator import get_llm
+
+
+# Complete AI assistant workflow.
+def run_assistant(question, k=3, llm=None):
+
+    # User query ke liye retrieval plan generate karna.
+    retrieval_plan = plan_retrieval(question, k=k)
+
+    # Planner ke modality filters ke according evidence retrieve karna.
+    evidence = retrieve_evidence(
+        question,
+        k=retrieval_plan["top_k"],
+        modality_filters=retrieval_plan["modality_filters"]
+    )
+
+    # Evidence available hone par Gemini initialize karna.
+    if evidence and llm is None:
+        llm = get_llm()
+
+    # Synthesis writer se answer generate aur validate karna.
+    synthesis_result = synthesize_answer(
+        question,
+        evidence,
+        llm
+    )
+
+    # Complete assistant response prepare karna.
+    return {
+        "question": question,
+        "retrieval_plan": retrieval_plan,
+        "evidence": evidence,
+        "answer": synthesis_result["answer"],
+        "validation": synthesis_result["validation"],
+        "evidence_count": synthesis_result["evidence_count"],
+        "evidence_gaps": synthesis_result["evidence_gaps"],
+        "status": synthesis_result["status"]
+    }
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\rag\embedding_generator.py ==========
+
+
+from sentence_transformers import SentenceTransformer
+
+
+# Local embedding model load kar rahe hain.
+MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
+
+model = SentenceTransformer(MODEL_NAME)
+
+
+def generate_embeddings(chunks):
+
+    # Har chunk ka text extract kar rahe hain.
+    texts = [chunk["chunk_text"] for chunk in chunks]
+
+    # Text ko numerical vectors mein convert kar rahe hain.
+    embeddings = model.encode(
+        texts,
+        convert_to_numpy=True,
+        normalize_embeddings=True
+    )
+
+    # Original chunks aur unke embeddings return kar rahe hain.
+    return embeddings
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\rag\prompt_templates.py ==========
+
+
+# LangChain prompt template import karna.
+from langchain_core.prompts import ChatPromptTemplate
+
+
+# System prompt define karna.
+SYSTEM_PROMPT = """
+ROLE:
+You are a Coursera Multimodal Learning Assistant.
+
+TASK:
+Analyze the learner's question using the supplied evidence.
+Explain learning difficulties and suggest useful recommendations.
+
+EVIDENCE:
+Use only the structured evidence provided below.
+Each evidence item may contain content, metadata and distance score.
+
+CONSTRAINTS:
+1. Never create unsupported facts.
+2. Do not use knowledge outside the supplied evidence.
+3. Preserve source IDs and segment IDs.
+4. Mention timestamps and modality when available.
+5. If evidence is insufficient, clearly say so.
+6. Recommendations must be actionable.
+7. Final decisions belong to a human reviewer.
+
+OUTPUT SCHEMA:
+Return a structured response containing:
+
+answer:
+A clear answer to the learner's question.
+
+friction_explanation:
+Explain the identified learning difficulty.
+
+recommendations:
+Provide practical recommendations.
+
+citations:
+List supporting source IDs, segment IDs and timestamps.
+
+evidence_gaps:
+Mention missing or insufficient evidence.
+
+VALIDATION:
+Every factual claim must be supported by supplied evidence.
+Never invent citations or metadata.
+"""
+
+
+# Human prompt define karna.
+HUMAN_PROMPT = """
+LEARNER QUESTION:
+{question}
+
+RETRIEVED EVIDENCE:
+{evidence}
+
+Analyze the question and return the required structured response.
+"""
+
+
+# System aur human prompts ko combine karna.
+PROMPT_TEMPLATE = ChatPromptTemplate.from_messages(
+    [
+        ("system", SYSTEM_PROMPT),
+        ("human", HUMAN_PROMPT)
+    ]
+)
+
+
+# Final prompt prepare karne ka function.
+def create_prompt(question, evidence):
+
+    # Question aur evidence ko prompt mein insert karna.
+    prompt = PROMPT_TEMPLATE.invoke(
+        {
+            "question": question,
+            "evidence": evidence
+        }
+    )
+
+    # Prepared prompt return karna.
+    return prompt
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\rag\vector_store.py ==========
+
+# FAISS vector database import karna.
+from langchain_community.vectorstores import FAISS
+
+# HuggingFace embedding model import karna.
+from langchain_huggingface import HuggingFaceEmbeddings
+
+
+# Local embedding model initialize karna.
+embeddings_model = HuggingFaceEmbeddings(
+    model_name="sentence-transformers/all-MiniLM-L6-v2"
+)
+
+
+# FAISS vector database create karna.
+def create_vector_store(chunks):
+
+    # Chunk text ko documents ke format mein convert karna.
+    texts = [chunk["chunk_text"] for chunk in chunks]
+
+    # Chunk metadata preserve karna.
+    metadatas = [
+        {
+            key: value
+            for key, value in chunk.items()
+            if key not in ["chunk_text"]
+        }
+        for chunk in chunks
+    ]
+
+    # LangChain FAISS vector store create karna.
+    vector_store = FAISS.from_texts(
+        texts=texts,
+        embedding=embeddings_model,
+        metadatas=metadatas
+    )
+
+    # Created vector store return karna.
+    return vector_store
+
+
+# Vector database save karna.
+def save_vector_store(vector_store, path="data/vector_store"):
+
+    # FAISS database ko local storage mein save karna.
+    vector_store.save_local(path)
+
+    # Success message print karna.
+    print("Vector store saved successfully!")
+
+
+# Saved vector database load karna.
+def load_vector_store(path="data/vector_store"):
+
+    # Local FAISS database load karna.
+    vector_store = FAISS.load_local(
+        path,
+        embeddings_model,
+        allow_dangerous_deserialization=True
+    )
+
+    # Loaded vector store return karna.
+    return vector_store
+
+
+# Similarity search with optional modality filtering.
+def search_vector_store(
+    vector_store,
+    query,
+    k=3,
+    modality_filters=None
+):
+
+    # Default mein metadata filter disabled rakhna.
+    metadata_filter = None
+
+    # Check karna ki modality filters available hain.
+    if modality_filters:
+
+        # Requested modalities ke according metadata filter banana.
+        metadata_filter = {
+            "modality": {
+                "$in": modality_filters
+            }
+        }
+
+    # FAISS se relevant documents aur distance scores retrieve karna.
+    results = vector_store.similarity_search_with_score(
+        query,
+        k=k,
+        filter=metadata_filter,
+        fetch_k=max(k * 10, 20)
+    )
+
+    # Retrieved results return karna.
+    return results
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\recommendations\friction_detector.py ==========
+
+
+# Student ki learning difficulties detect karne ke liye function.
+def detect_friction(student_activity):
+
+    # Detected problems store karne ke liye empty list.
+    friction_points = []
+
+    # Student ki activity mein quiz score check karna.
+    quiz_score = student_activity.get("quiz_score", 100)
+
+    # Agar quiz score 50 se kam hai.
+    if quiz_score < 50:
+
+        # Low quiz performance ko learning difficulty maana jayega.
+        friction_points.append("Low quiz performance")
+
+    # Student ki repeated mistakes count karna.
+    repeated_mistakes = student_activity.get("repeated_mistakes", 0)
+
+    # Agar mistakes 3 ya usse zyada hain.
+    if repeated_mistakes >= 3:
+
+        # Repeated mistakes ko friction point mein add karna.
+        friction_points.append("Repeated mistakes detected")
+
+    # Student ki help requests count karna.
+    help_requests = student_activity.get("help_requests", 0)
+
+    # Agar student ne 5 ya usse zyada baar help maangi.
+    if help_requests >= 5:
+
+        # Frequent help requests ko difficulty maana jayega.
+        friction_points.append("Frequent help requests")
+
+    # Final detected difficulties return karna.
+    return friction_points
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\retrieval\evidence_ranker.py ==========
+
+
+# Evidence ranking function.
+def rank_evidence(evidence):
+
+    # Empty evidence check karna.
+    if not evidence:
+        return []
+
+    # FAISS L2 distance mein lower score better hota hai.
+    ranked_evidence = sorted(
+        evidence,
+        key=lambda item: item["score"]
+    )
+
+    # Ranked evidence return karna.
+    return ranked_evidence
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\retrieval\evidence_retriever.py ==========
+
+# Query processor import karna.
+from retrieval.query_processor import process_query
+
+# FAISS database functions import karna.
+from database.chroma_manager import load_database, search_database
+
+# Evidence ranker import karna.
+from retrieval.evidence_ranker import rank_evidence
+
+
+# Relevant evidence retrieve karne ka function.
+def retrieve_evidence(query, k=3, modality_filters=None):
+
+    # User query clean karna.
+    clean_query = process_query(query)
+
+    # Saved FAISS database load karna.
+    vector_store = load_database()
+
+    # FAISS se filtered documents aur scores retrieve karna.
+    results = search_database(
+        vector_store,
+        clean_query,
+        k=k,
+        modality_filters=modality_filters
+    )
+
+    # Structured evidence list create karna.
+    evidence = []
+
+    # Har document aur uske score ko process karna.
+    for document, score in results:
+
+        # Document content, metadata aur score store karna.
+        evidence_item = {
+            "content": document.page_content,
+            "metadata": document.metadata,
+            "score": float(score)
+        }
+
+        # Evidence list mein add karna.
+        evidence.append(evidence_item)
+
+    # Evidence ko relevance ke according rank karna.
+    ranked_evidence = rank_evidence(evidence)
+
+    # Final ranked evidence return karna.
+    return ranked_evidence
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\retrieval\query_processor.py ==========
+
+
+import re
+
+
+# User query ko clean aur prepare karna.
+def process_query(query):
+
+    # Query string validate karna.
+    if not isinstance(query, str):
+        raise TypeError("Query must be a string")
+
+    # Extra spaces remove karna.
+    query = query.strip()
+
+    # Multiple spaces ko single space banana.
+    query = re.sub(r"\s+", " ", query)
+
+    # Empty query check karna.
+    if not query:
+        raise ValueError("Query cannot be empty")
+
+    # Clean query return karna.
+    return query
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\retrieval\__init__.py ==========
+
+
+
+========== C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\review\review_manager.py ==========
+
+
+# AI recommendation ko review karne ke liye function.
+def review_recommendation(recommendation, status):
+
+    # Allowed review statuses define karna.
+    allowed_statuses = ["approved", "rejected", "pending"]
+
+    # Check karna ki diya gaya status valid hai ya nahi.
+    if status not in allowed_statuses:
+
+        # Invalid status hone par error return karna.
+        return {
+            "success": False,
+            "message": "Invalid review status."
+        }
+
+    # Recommendation aur uska review status store karna.
+    review_result = {
+        "recommendation": recommendation,
+        "status": status,
+        "success": True
+    }
+
+    # Final review result return karna.
+    return review_result
+
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\config.py ==========
+
+
+from pathlib import Path
+
+# Main project directory
+BASE_DIR = Path(__file__).resolve().parent
+
+# Project name
+PROJECT_NAME = "Coursera Multimodal Intelligence Platform"
+
+# Data directories
+DATA_DIR = BASE_DIR / "data"
+UPLOAD_DIR = DATA_DIR / "uploads"
+PROCESSED_DIR = DATA_DIR / "processed"
+FAISS_DIR = DATA_DIR / "faiss_db"
+
+
+# Create required folders automatically
+DATA_DIR.mkdir(exist_ok=True)
+UPLOAD_DIR.mkdir(exist_ok=True)
+PROCESSED_DIR.mkdir(exist_ok=True)
+FAISS_DIR.mkdir(exist_ok=True)
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\requirements.txt ==========
+
+
+streamlit
+chromadb
+sentence-transformers
+langchain
+langchain-chroma
+langchain-core
+python-dotenv
+pandas
+plotly
+pymupdf
+pillow
+opencv-python
+faster-whisper
+pytesseract
+faiss-cpu
+langchain-community
+langchain-huggingface
+langchain-google-genai
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\agents\asset_profiler.py ==========
+
+
+# Path aur file information handle karne ke liye Path import karna.
+from pathlib import Path
+
+# Existing asset registry se registered assets retrieve karna.
+from ingestion.asset_registry import get_all_assets
+
+
+# Project ka main folder identify karna.
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Uploaded assets ka folder define karna.
+UPLOAD_DIR = BASE_DIR / "data" / "uploads"
+
+
+# Supported modalities define karna.
+SUPPORTED_MODALITIES = {
+    "pdf",
+    "video",
+    "audio",
+    "image",
+    "text",
+    "quiz",
+    "discussion"
+}
+
+
+# Asset ki profile generate karne wala function.
+def profile_asset(asset_id):
+
+    # Registry se saare registered assets retrieve karna.
+    assets = get_all_assets()
+
+    # Requested asset ko search karna.
+    for asset in assets:
+
+        # Database record se asset ki details nikalna.
+        (
+            registered_id,
+            filename,
+            modality,
+            owner,
+            permission_scope,
+            processing_status,
+            created_at
+        ) = asset
+
+        # Requested asset ID match karna.
+        if registered_id == asset_id:
+
+            # Filename se safe file name identify karna.
+            safe_filename = Path(filename).name
+
+            # Uploaded file ka actual path create karna.
+            file_path = UPLOAD_DIR / safe_filename
+
+            # Check karna ki uploaded file exist karti hai.
+            file_exists = file_path.is_file()
+
+            # File ka extension identify karna.
+            file_extension = file_path.suffix.lower()
+
+            # File ka size available hone par calculate karna.
+            file_size = file_path.stat().st_size if file_exists else None
+
+            # Modality supported hai ya nahi check karna.
+            modality_supported = modality.lower() in SUPPORTED_MODALITIES
+
+            # Asset ki complete profile prepare karna.
+            profile = {
+                "asset_id": registered_id,
+                "filename": filename,
+                "modality": modality,
+                "asset_type": modality,
+                "file_extension": file_extension,
+                "file_exists": file_exists,
+                "file_size_bytes": file_size,
+                "modality_supported": modality_supported,
+                "owner": owner,
+                "permission_scope": permission_scope,
+                "processing_status": processing_status,
+                "created_at": created_at,
+                "profile_status": (
+                    "profiled"
+                    if file_exists and modality_supported
+                    else "needs_attention"
+                )
+            }
+
+            # Generated asset profile return karna.
+            return profile
+
+    # Asset registry mein nahi mila toh None return karna.
+    return None
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\agents\quality_validator.py ==========
+
+ # Regular expression module import karna.
+import re
+
+# AI generated answer validate karne ka function.
+def validate_answer(answer, evidence):
+
+    # Validation issues store karne ke liye list.
+    issues = []
+
+    # Valid citations store karne ke liye list.
+    valid_citations = []
+
+    # Answer string check karna.
+    if not isinstance(answer, str) or not answer.strip():
+
+        # Empty answer par issue add karna.
+        issues.append("Generated answer is empty.")
+
+    # Evidence list check karna.
+    if not evidence:
+
+        # Evidence missing hone par issue add karna.
+        issues.append("No supporting evidence available.")
+
+    # Evidence ke har item ko check karna.
+    for item in evidence or []:
+
+        # Evidence metadata extract karna.
+        metadata = item.get("metadata", {})
+
+        # Important source identifiers select karna.
+        for key in ["asset_id", "chunk_id", "segment_id", "source_id"]:
+
+            # Metadata mein identifier available hai ya nahi.
+            identifier = metadata.get(key)
+
+            # Identifier answer mein present hai ya nahi.
+            if identifier and re.search(
+                r"(?<!\w)" + re.escape(str(identifier)) + r"(?!\w)",
+                answer or ""
+            ):
+
+                # Supported citation record karna.
+                valid_citations.append(str(identifier))
+
+    # Evidence available hai lekin citation mention nahi hui.
+    if evidence and not valid_citations:
+
+        # Missing citation warning add karna.
+        issues.append("No retrieved evidence identifiers found in answer.")
+
+    # Duplicate citations remove karna.
+    valid_citations = list(dict.fromkeys(valid_citations))
+
+    # Final validation result return karna.
+    return {
+        "is_valid": len(issues) == 0,
+        "issues": issues,
+        "valid_citations": valid_citations
+    }
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\agents\retrieval_planner.py ==========
+
+
+# Regular expressions use karne ke liye re import karna.
+import re
+
+# Existing query processor import karna.
+from retrieval.query_processor import process_query
+
+
+# Project ki supported modalities define karna.
+SUPPORTED_MODALITIES = {
+    "pdf": ["pdf", "document", "notes"],
+    "video": ["video", "lecture"],
+    "audio": ["audio", "recording", "speech"],
+    "image": ["image", "picture", "diagram", "chart"],
+    "text": ["text", "article"],
+    "quiz": ["quiz", "question", "assessment"],
+    "discussion": ["discussion", "forum"]
+}
+
+
+# Query se retrieval plan generate karne wala function.
+def plan_retrieval(query, k=3):
+
+    # User query ko clean karna.
+    clean_query = process_query(query)
+
+    # Top K value positive integer honi chahiye.
+    if isinstance(k, bool) or not isinstance(k, int) or k <= 0:
+        raise ValueError("k must be a positive integer")
+
+    # Query ko lowercase mein convert karna.
+    lower_query = clean_query.lower()
+
+    # Query mein mentioned modalities identify karna.
+    selected_modalities = []
+
+    # Har supported modality ko check karna.
+    for modality, terms in SUPPORTED_MODALITIES.items():
+
+        # Modality ke keywords ko query mein search karna.
+        if any(
+            re.search(r"\b" + re.escape(term) + r"\b", lower_query)
+            for term in terms
+        ):
+
+            # Matching modality ko result mein add karna.
+            selected_modalities.append(modality)
+
+    # Common unnecessary words define karna.
+    stop_words = {
+        "the", "is", "are", "was", "were", "a", "an",
+        "and", "or", "of", "in", "on", "to", "for",
+        "from", "with", "by", "using", "explain",
+        "describe", "show", "me", "please", "what",
+        "how", "why", "about"
+    }
+
+    # Query ko individual words mein divide karna.
+    words = re.findall(r"\b[a-zA-Z0-9]+\b", lower_query)
+
+    # Unnecessary words remove karke keywords prepare karna.
+    keywords = [
+        word for word in words
+        if word not in stop_words
+        and not any(
+            word in terms
+            for terms in SUPPORTED_MODALITIES.values()
+        )
+    ]
+
+    # Agar keywords empty hain toh original query use karna.
+    if not keywords:
+        keywords = words
+
+    # Final structured retrieval plan create karna.
+    retrieval_plan = {
+        "original_query": clean_query,
+        "keywords": list(dict.fromkeys(keywords)),
+        "modality_filters": selected_modalities,
+        "top_k": k,
+        "strategy": (
+            "modality_filtered"
+            if selected_modalities
+            else "search_all_modalities"
+        )
+    }
+
+    # Prepared retrieval plan return karna.
+    return retrieval_plan
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\agents\synthesis_writer.py ==========
+
+
+# Existing RAG answer generator import karna.
+from rag.answer_generator import generate_answer
+
+# Existing quality validator import karna.
+from agents.quality_validator import validate_answer
+
+
+# Evidence ke basis par final answer generate karna.
+def synthesize_answer(question, evidence, llm):
+
+    # Existing RAG generator se answer generate karna.
+    generated_result = generate_answer(
+        question,
+        evidence,
+        llm
+    )
+
+    # Check karna ki generator ne dictionary return ki hai.
+    if isinstance(generated_result, dict):
+
+        # Dictionary se generated answer extract karna.
+        answer = generated_result.get("answer", "")
+
+        # Generator se available evidence gaps extract karna.
+        evidence_gaps = generated_result.get("evidence_gaps")
+
+    else:
+
+        # Direct AI response ko answer variable mein store karna.
+        answer = generated_result
+
+        # Evidence gaps available nahi hain.
+        evidence_gaps = None
+
+    # Existing validator se answer ki quality check karna.
+    validation = validate_answer(
+        answer,
+        evidence
+    )
+
+    # Final structured synthesis result create karna.
+    result = {
+        "question": question,
+        "answer": answer,
+        "evidence_count": len(evidence or []),
+        "validation": validation,
+        "evidence_gaps": evidence_gaps,
+        "status": (
+            "validated"
+            if validation["is_valid"]
+            else "needs_review"
+        )
+    }
+
+    # Final result return karna.
+    return result
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\agents\__init__.py ==========
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\dashboard\analytics_page.py ==========
+
+
+# Streamlit library import karna.
+import streamlit as st
+
+# Pandas library import karna.
+import pandas as pd
+
+# Plotly chart library import karna.
+import plotly.express as px
+
+
+# Learning analytics page display karne ke liye function.
+def render_analytics_page():
+
+    # Dashboard ka main heading.
+    st.title("Learning Analytics Dashboard")
+
+    # Sample student data create karna.
+    student_data = pd.DataFrame([
+        {
+            "Student": "Student 1",
+            "Quiz Score": 85,
+            "Study Hours": 12,
+            "Activities": 20,
+            "Difficulties": 1,
+            "Recommendation": "Explore advanced ML"
+        },
+        {
+            "Student": "Student 2",
+            "Quiz Score": 45,
+            "Study Hours": 5,
+            "Activities": 10,
+            "Difficulties": 3,
+            "Recommendation": "Revise Python basics"
+        },
+        {
+            "Student": "Student 3",
+            "Quiz Score": 70,
+            "Study Hours": 9,
+            "Activities": 16,
+            "Difficulties": 2,
+            "Recommendation": "Practice SQL queries"
+        }
+    ])
+
+    # All Students aur individual students ki list banana.
+    student_options = ["All Students"] + student_data["Student"].tolist()
+
+    # Student selector display karna.
+    selected_student = st.selectbox(
+        "Select Student",
+        student_options
+    )
+
+    # Agar All Students select kiya gaya.
+    if selected_student == "All Students":
+
+        # Complete student dataset use karna.
+        filtered_data = student_data.copy()
+
+    # Agar individual student select kiya gaya.
+    else:
+
+        # Sirf selected student ka data filter karna.
+        filtered_data = student_data[
+            student_data["Student"] == selected_student
+        ]
+
+    # Dashboard metrics ke liye columns banana.
+    col1, col2, col3 = st.columns(3)
+
+    # Average quiz score calculate karna.
+    average_score = filtered_data["Quiz Score"].mean()
+
+    # Total study hours calculate karna.
+    total_hours = filtered_data["Study Hours"].sum()
+
+    # Total learning activities calculate karna.
+    total_activities = filtered_data["Activities"].sum()
+
+    # Average score display karna.
+    col1.metric("Average Quiz Score", f"{average_score:.1f}%")
+
+    # Study hours display karna.
+    col2.metric("Study Hours", f"{total_hours}")
+
+    # Learning activities display karna.
+    col3.metric("Activities Completed", f"{total_activities}")
+
+    # Performance chart ka heading.
+    st.subheader("Student Performance")
+
+    # Quiz scores ka bar chart banana.
+    performance_chart = px.bar(
+        filtered_data,
+        x="Student",
+        y="Quiz Score",
+        title="Quiz Performance"
+    )
+
+    # Chart dashboard par display karna.
+    st.plotly_chart(performance_chart, use_container_width=True)
+
+    # Learning activity chart ka heading.
+    st.subheader("Learning Activity")
+
+    # Study hours ka chart banana.
+    activity_chart = px.bar(
+        filtered_data,
+        x="Student",
+        y="Study Hours",
+        title="Study Hours"
+    )
+
+    # Activity chart display karna.
+    st.plotly_chart(activity_chart, use_container_width=True)
+
+    # Detected difficulties ka heading.
+    st.subheader("Detected Learning Difficulties")
+
+    # Difficulty information display karna.
+    st.dataframe(
+        filtered_data[
+            ["Student", "Difficulties"]
+        ],
+        use_container_width=True
+    )
+
+    # AI recommendations ka heading.
+    st.subheader("AI Recommendations")
+
+    # Har selected student ki recommendation display karna.
+    st.dataframe(
+        filtered_data[
+            ["Student", "Recommendation"]
+        ],
+        use_container_width=True
+    )
+
+    # Filtered dataset future integration ke liye return karna.
+    return filtered_data
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\dashboard\query_page.py ==========
+
+
+# Streamlit library import karna.
+import streamlit as st
+
+
+# Query page display karne ke liye function.
+def render_query_page():
+
+    # Page ka heading display karna.
+    st.title("Unified Query Workspace")
+
+    # Page ka description display karna.
+    st.write("Ask questions about your uploaded learning materials.")
+
+    # User se question input lena.
+    user_query = st.text_area(
+        "Enter your question",
+        placeholder="Example: Explain machine learning."
+    )
+
+    # User ko query submit karne ka button dena.
+    submit_query = st.button("Submit Query")
+
+    # Check karna ki button click hua hai ya nahi.
+    if submit_query:
+
+        # Check karna ki user ne question enter kiya hai ya nahi.
+        if user_query.strip():
+
+            # Abhi RAG integration pending hone ka message.
+            st.info("Your question has been received.")
+
+            # Enter ki gayi query display karna.
+            st.write("Your Question:", user_query)
+
+            # Future RAG integration ke liye placeholder.
+            st.warning(
+                "Answer generation will be connected "
+                "during final integration."
+            )
+
+        # Agar user ne empty query submit ki.
+        else:
+
+            # User ko question enter karne ke liye inform karna.
+            st.error("Please enter a question.")
+
+    # Query ko future integration ke liye return karna.
+    return user_query
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\dashboard\review_page.py ==========
+
+
+# Streamlit library import karna.
+import streamlit as st
+
+# Existing review manager import karna.
+from review.review_manager import review_recommendation
+
+
+# Review dashboard display karne ke liye function.
+def render_review_page():
+
+    # Dashboard heading display karna.
+    st.title("Recommendation Review Dashboard")
+
+    # Sample AI recommendations create karna.
+    recommendations = [
+        "Revise Python fundamentals",
+        "Practice SQL queries",
+        "Explore Machine Learning basics"
+    ]
+
+    # Har recommendation ke liye review interface banana.
+    for index, recommendation in enumerate(recommendations):
+
+        # Recommendation ko separate section mein display karna.
+        with st.container():
+
+            # Recommendation heading display karna.
+            st.subheader(f"Recommendation {index + 1}")
+
+            # Recommendation ka text display karna.
+            st.write(recommendation)
+
+            # Approve aur reject buttons ke liye columns banana.
+            col1, col2 = st.columns(2)
+
+            # Approve button display karna.
+            with col1:
+
+                # Button click hone par recommendation approve karna.
+                if st.button("Approve", key=f"approve_{index}"):
+
+                    # Review manager ko approved status bhejna.
+                    result = review_recommendation(
+                        recommendation,
+                        "approved"
+                    )
+
+                    # Review result display karna.
+                    st.success(result["message"] if "message" in result else "Recommendation approved.")
+
+            # Reject button display karna.
+            with col2:
+
+                # Button click hone par recommendation reject karna.
+                if st.button("Reject", key=f"reject_{index}"):
+
+                    # Review manager ko rejected status bhejna.
+                    result = review_recommendation(
+                        recommendation,
+                        "rejected"
+                    )
+
+                    # Review result display karna.
+                    st.warning(result["message"] if "message" in result else "Recommendation rejected.")
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\dashboard\upload_page.py ==========
+
+
+# Streamlit library import karna.
+import streamlit as st
+
+
+# Supported multimodal file formats define karna.
+SUPPORTED_FORMATS = [
+    "pdf",
+    "png",
+    "jpg",
+    "jpeg",
+    "wav",
+    "mp3",
+    "mp4",
+    "avi"
+]
+
+
+# Upload page display karne ke liye function.
+def render_upload_page():
+
+    # Page ka main heading display karna.
+    st.title("Multimodal Asset Intake Console")
+
+    # Page ka short description display karna.
+    st.write("Upload your learning documents and media files.")
+
+    # User ko multiple files upload karne ka option dena.
+    uploaded_files = st.file_uploader(
+        "Choose your files",
+        type=SUPPORTED_FORMATS,
+        accept_multiple_files=True
+    )
+
+    # Check karna ki user ne files upload ki hain ya nahi.
+    if uploaded_files:
+
+        # Upload section ka heading display karna.
+        st.subheader("Uploaded Asset Details")
+
+        # Har uploaded file ki details check karna.
+        for uploaded_file in uploaded_files:
+
+            # File ka size bytes se KB mein convert karna.
+            file_size = uploaded_file.size / 1024
+
+            # Har file ki details ek expandable section mein dikhana.
+            with st.expander(uploaded_file.name):
+
+                # File ka original name display karna.
+                st.write("File Name:", uploaded_file.name)
+
+                # File ka format display karna.
+                st.write("File Type:", uploaded_file.type)
+
+                # File ka size display karna.
+                st.write("File Size:", f"{file_size:.2f} KB")
+
+                # File upload interface tak receive hone ka status.
+                st.success("File received successfully.")
+
+        # Total uploaded files count display karna.
+        st.info(f"Total uploaded files: {len(uploaded_files)}")
+
+        # Abhi permanent storage aur ingestion integration pending hai.
+        st.warning(
+            "Files are currently available in the upload interface. "
+            "Permanent storage will be connected during final integration."
+        )
+
+    # Agar koi file upload nahi hui.
+    else:
+
+        # User ko upload karne ke liye instruction dena.
+        st.info("Please upload at least one file.")
+
+    # Uploaded files ko future integration ke liye return karna.
+    return uploaded_files
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\data\processed\ASSET-TEST-001\alignment.json ==========
+
+[
+    {
+        "asset_id": "ASSET-TEST-001",
+        "frame_id": "391a2a2b-87f4-436f-aaea-0f3ce2f4b8b3",
+        "timestamp": 0.0,
+        "frame_path": "C:\\Users\\MCC\\OneDrive\\Desktop\\Coursera multimodel GenAI\\data\\processed\\ASSET-TEST-001\\frames\\frame_000000.jpg",
+        "modality": "video_frame_transcript",
+        "transcript_segments": [
+            {
+                "segment_id": "SEG-3f15a0ea",
+                "start": 0.72,
+                "end": 5.34,
+                "text": "अचरापाने यह भो आप पाद है हूचने यह नहीं ह।"
+            }
+        ],
+        "status": "matched"
+    },
+    {
+        "asset_id": "ASSET-TEST-001",
+        "frame_id": "27ed333d-cb28-407c-b050-b1f403962f57",
+        "timestamp": 5.0,
+        "frame_path": "C:\\Users\\MCC\\OneDrive\\Desktop\\Coursera multimodel GenAI\\data\\processed\\ASSET-TEST-001\\frames\\frame_000150.jpg",
+        "modality": "video_frame_transcript",
+        "transcript_segments": [
+            {
+                "segment_id": "SEG-3f15a0ea",
+                "start": 0.72,
+                "end": 5.34,
+                "text": "अचरापाने यह भो आप पाद है हूचने यह नहीं ह।"
+            }
+        ],
+        "status": "matched"
+    }
+]
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\data\processed\ASSET-TEST-001\metadata.json ==========
+
+{
+    "asset_id": "ASSET-TEST-001",
+    "modality": "video",
+    "processing_status": "preprocessed",
+    "total_frames": 2,
+    "total_transcript_segments": 1,
+    "total_aligned_frames": 2,
+    "unmatched_frames": 0,
+    "frame_interval_seconds": 5,
+    "source_file": "testing_video.mp4",
+    "processed_at": "2026-11-19T06:11:29.667309+00:00"
+}
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\data\processed\ASSET-TEST-001\transcripts\transcript.txt ==========
+
+[0.72 - 5.34] अचरापाने यह भो आप पाद है हूचने यह नहीं ह।
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\data\processed\AUDIO-TEST-001\metadata.json ==========
+
+{
+    "asset_id": "AUDIO-TEST-001",
+    "source_file": "audio.aac",
+    "modality": "audio",
+    "total_segments": 1,
+    "segments": [
+        {
+            "asset_id": "AUDIO-TEST-001",
+            "source_file": "audio.aac",
+            "modality": "audio",
+            "segment_id": "AUDIO-TEST-001-SEG-1",
+            "start_time": 0.0,
+            "end_time": 5.0,
+            "text": "Please tell me about Mevath, what kind of place."
+        }
+    ],
+    "processing_status": "completed",
+    "processed_at": "2026-11-19T12:58:54.329504+00:00"
+}
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\data\processed\DISC-TEST-001\metadata.json ==========
+
+{
+    "asset_id": "DISC-TEST-001",
+    "modality": "discussion",
+    "total_segments": 2,
+    "source_file": "sample_discussion.json",
+    "status": "preprocessed",
+    "segment_ids": [
+        "DISC-TEST-001-DISC-1",
+        "DISC-TEST-001-DISC-2"
+    ],
+    "processed_at": "2026-11-19T13:31:24.834280+00:00"
+}
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\data\processed\IMG-TEST-001\metadata.json ==========
+
+{
+    "asset_id": "IMG-TEST-001",
+    "source_file": "test.jpg",
+    "modality": "image",
+    "format": "PNG",
+    "width": 1132,
+    "height": 631,
+    "mode": "RGBA",
+    "extracted_text": "Sales Performance Interactive Dashboard\n\nTotal Order Total Profit Total Revenue Total Discount Total COGS Avg Gross Margin\n) 2707 $296,384 tS) $645,223 $44,734 $348,839 50.18%\neamereene Eimear ‘Country Wise Total Revenue Sales Chennel Profit\nsonrees ER\ntation rae\nrace rs —\n~~ ‘sae\na a a = Ta] on\n\nCategory Wise Total Profit\n\nCustomer Type Wise Total\n— Revenue\nbezex\nfx\nom\nosinest New Retuning\n\ncote #omencanpe Sales Chennel Wise Total Profit\n\nSuman Ene Wezenape ase\n\n70\n| Z |\n\nQuarter\n\n‘Sales Chennel Wise Total Revenue\n\nCategory Unit Sold\n\n9)",
+    "processing_status": "completed",
+    "processed_at": "2026-11-19T10:19:36.351359+00:00"
+}
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\data\processed\PDF-TEST-001\metadata.json ==========
+
+{
+    "asset_id": "PDF-TEST-001",
+    "source_file": "Suheb_Khan_Resume.pdf",
+    "modality": "pdf",
+    "total_pages": 2,
+    "pages": [
+        {
+            "asset_id": "PDF-TEST-001",
+            "source_file": "Suheb_Khan_Resume.pdf",
+            "modality": "pdf",
+            "segment_id": "PDF-TEST-001-PAGE-1",
+            "page_number": 1,
+            "text": "Suheb Khan \nAspiring Data Analyst & Data Scientist | Python | SQL | Machine Learning | Deep Learning | \nGenerative AI \nNuh, Haryana 122108 | +91 98134 31442 | soyabrubi1231@gmail.com \nSummary \nAspiring Data Analyst with a strong foundation in Data Science, Python, SQL, and data visualization. Currently undergoing \nindustry-oriented Data Science training at AlmaBetter, gaining hands-on experience in data analysis, data cleaning, \nexploratory data analysis (EDA), statistical analysis, and machine learning. \nProficient in working with Python libraries such as Pandas, NumPy, Matplotlib, and Scikit-learn, along with SQL, Excel, and \nPower BI. Experienced in developing practical projects, analyzing real-world datasets, building interactive dashboards, and \nextracting meaningful insights to support data-driven decision-making. \nPassionate about transforming raw data into actionable insights, solving business problems, and continuously developing \nanalytical and technical skills. Actively seeking an entry-level Data Analyst opportunity to apply my knowledge and \ncontribute to data-driven business solutions. \nWilling to relocate to: Greater Noida, Uttar Pradesh - Gurugram, Haryana - Delhi, Delhi \nPersonal Information \nHighest Career Level: Fresher \nIndustry: Analytics \nTotal years of experience: 0 \nWork Experience \nData Science Trainee \nAlmaBetter | Remote \nInternship \n0-15 days notice period \nOctober 2025 to Present \nPosition: Data Science Trainee \nOrganization: AlmaBetter \nExperience Type: Training \nDescription: \nPursuing comprehensive, industry-oriented training in Data Science, Machine Learning, and Artificial Intelligence through \nAlmaBetter, with a strong focus on practical implementation and real-world problem-solving. \n• Developed hands-on skills in Python, SQL, Pandas, NumPy, and Exploratory Data Analysis (EDA). \n• Worked on data cleaning, preprocessing, feature engineering, statistical analysis, and data visualization. \n• Gained practical experience in Machine Learning algorithms, model development, evaluation, and hyperparameter \ntuning using Scikit-learn. \n• Built predictive analytics projects using real-world datasets and applied data-driven problem-solving techniques. \n• Explored Deep Learning, Generative AI, Large Language Models (LLMs), and Retrieval-Augmented Generation (RAG). \n• Developed hands-on projects involving AI-powered applications and document-based question-answering systems. \n• Strengthened analytical thinking, problem-solving, and technical skills through practical assignments and project-based \nlearning. \nKey Focus: Data Analysis | Machine Learning | Python | SQL | Generative AI | Deep Learning | Real-World Projects",
+            "has_text": true,
+            "extraction_method": "pymupdf"
+        },
+        {
+            "asset_id": "PDF-TEST-001",
+            "source_file": "Suheb_Khan_Resume.pdf",
+            "modality": "pdf",
+            "segment_id": "PDF-TEST-001-PAGE-2",
+            "page_number": 2,
+            "text": "Education \nNon medical \nGurugram University | Nuh, Haryana \nSeptember 2022 to July 2025 \nScored: 65 \nPursuing B.Sc. (Non-Medical) with a strong interest in Data Science, Artificial Intelligence, and Machine Learning. \nSelf-motivated learner with experience in independent study and problem-solving. \ncontinuously developing analytical and quantitative skills. \nInterested in applying data-driven approaches to solve real-world business and social problems. \nActively exploring AI, Data Science, and emerging technologies through online courses and self-learning. \nStrong commitment to continuous learning, professional growth, and ethical work practices. \nInterested in educational content creation and knowledge sharing through digital platforms. \nLicenses and Certifications \nAlmaBetter – Data Science Training (Certificate of Completion) \nMS in Computer science: Machine Learning and Ai Engineering \nMS in Computer Science (Machine Learning & AI Engineering) – Ongoing \nCurrently developing knowledge in Machine Learning, Artificial Intelligence, Data Analysis, and Statistical Modeling. \nLearning to build and evaluate predictive models using modern AI and Machine Learning techniques. \nGaining practical exposure to data preprocessing, feature engineering, model development, and deployment concepts. \nExploring applications of AI in business intelligence, automation, and real-world problem solving. \nContinuously enhancing analytical, mathematical, and problem-solving skills through coursework and projects. \nSkills \nSQL \n Featuring Engineering \n Matplotlib \n Python \n Pandas \n Data Cleaning \nData Visualization \n Scikit-learn \n Statistics \n Seaborn \n POWER BI \n NUMPY \n Excel \nMachine learning \n Exploratory Data Analysis (EDA) \n Microsoft Office",
+            "has_text": true,
+            "extraction_method": "pymupdf"
+        }
+    ],
+    "processing_status": "completed",
+    "processed_at": "2026-11-19T11:19:56.246661+00:00"
+}
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\data\processed\QUIZ-TEST-001\metadata.json ==========
+
+{
+    "asset_id": "QUIZ-TEST-001",
+    "modality": "quiz",
+    "total_questions": 2,
+    "source_file": "sample_quiz.json",
+    "status": "preprocessed",
+    "segment_ids": [
+        "QUIZ-TEST-001-QUESTION-1",
+        "QUIZ-TEST-001-QUESTION-2"
+    ],
+    "processed_at": "2026-11-19T13:22:48.501676+00:00"
+}
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\data\processed\TEXT-TEST-001\metadata.json ==========
+
+{
+    "asset_id": "TEXT-TEST-001",
+    "modality": "text",
+    "total_segments": 3,
+    "source_file": "sample.txt",
+    "status": "preprocessed",
+    "segment_ids": [
+        "TEXT-TEST-001-SEG-1",
+        "TEXT-TEST-001-SEG-2",
+        "TEXT-TEST-001-SEG-3"
+    ],
+    "processed_at": "2026-11-19T13:13:30.350888+00:00"
+}
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\data\processed\TEXT-TEST-002\chunk_metadata.json ==========
+
+{
+    "asset_id": "TEXT-TEST-002",
+    "modality": "document",
+    "total_chunks": 4,
+    "source_file": "test_notes.pdf",
+    "chunk_ids": [
+        "a934fa3b-c5d2-49b4-afcb-6769a35ca759",
+        "1b4e0fd1-f3f2-4f54-824a-a5641064d4ca",
+        "afc3d73d-a1aa-449f-815a-b8d1957463c8",
+        "e34d1d98-3737-48ef-9135-c9f287fa8ccc"
+    ],
+    "page_numbers": [
+        1
+    ],
+    "status": "chunked",
+    "created_at": "2026-11-19T15:27:49.805119+00:00"
+}
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\data\uploads\sample.txt ==========
+
+Machine learning is a branch of AI.
+It helps computers learn from data.
+Machine learning is a branch of AI.
+Data science uses machine learning.
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\data\uploads\sample_discussion.json ==========
+
+
+{
+    "discussions": [
+        {
+            "author": "Student 1",
+            "content": "I am confused about Machine Learning."
+        },
+        {
+            "author": "Student 2",
+            "content": "Can someone explain Python functions?"
+        },
+        {
+            "author": "Student 3",
+            "content": "I am confused about Machine Learning."
+        }
+    ]
+}
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\data\uploads\sample_quiz.json ==========
+
+
+{
+    "questions": [
+        {
+            "question": "What is Machine Learning?",
+            "options": ["AI", "Database", "Operating System"],
+            "correct_answer": "AI"
+        },
+        {
+            "question": "What is Python?",
+            "options": ["Programming Language", "Browser", "Hardware"],
+            "correct_answer": "Programming Language"
+        },
+        {
+            "question": "What is Machine Learning?",
+            "options": ["AI", "Database", "Operating System"],
+            "correct_answer": "AI"
+        }
+    ]
+}
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\database\chroma_manager.py ==========
+
+# Existing FAISS functions import karna.
+from rag.vector_store import (
+    create_vector_store,
+    save_vector_store,
+    load_vector_store,
+    search_vector_store
+)
+
+
+# FAISS database create karna.
+def create_database(chunks):
+
+    # Chunks se FAISS vector store create karna.
+    vector_store = create_vector_store(chunks)
+
+    # Created database return karna.
+    return vector_store
+
+
+# FAISS database save karna.
+def save_database(vector_store):
+
+    # Vector store ko local storage mein save karna.
+    save_vector_store(vector_store)
+
+
+# Saved FAISS database load karna.
+def load_database():
+
+    # Existing vector store load karna.
+    vector_store = load_vector_store()
+
+    # Loaded database return karna.
+    return vector_store
+
+
+# Database mein modality-based similarity search karna.
+def search_database(
+    vector_store,
+    query,
+    k=3,
+    modality_filters=None
+):
+
+    # FAISS search function ko modality filters pass karna.
+    results = search_vector_store(
+        vector_store,
+        query,
+        k,
+        modality_filters
+    )
+
+    # Search results return karna.
+    return results
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\database\__init__.py ==========
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\embeddings\image_embeddings.py ==========
+
+
+from sentence_transformers import SentenceTransformer
+from PIL import Image
+
+
+# Image embedding model select karna.
+MODEL_NAME = "clip-ViT-B-32"
+
+
+# CLIP model load karna.
+model = SentenceTransformer(MODEL_NAME)
+
+
+def generate_image_embeddings(image_paths):
+
+    # Images load karne ke liye empty list.
+    images = []
+
+    # Har image ka path process karna.
+    for image_path in image_paths:
+
+        # Image open karke RGB format mein convert karna.
+        image = Image.open(image_path).convert("RGB")
+
+        # Loaded image ko list mein add karna.
+        images.append(image)
+
+    # Images ko numerical vectors mein convert karna.
+    embeddings = model.encode(
+        images,
+        convert_to_numpy=True,
+        normalize_embeddings=True
+    )
+
+    # Generated image embeddings return karna.
+    return embeddings
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\embeddings\text_embeddings.py ==========
+
+
+from sentence_transformers import SentenceTransformer
+
+
+# Local text embedding model select karna.
+MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
+
+
+# Embedding model load karna.
+model = SentenceTransformer(MODEL_NAME)
+
+
+def generate_text_embeddings(chunks):
+
+    # Har chunk se text extract karna.
+    texts = [chunk["chunk_text"] for chunk in chunks]
+
+    # Text ko numerical vectors mein convert karna.
+    embeddings = model.encode(
+        texts,
+        convert_to_numpy=True,
+        normalize_embeddings=True
+    )
+
+    # Generated embeddings return karna.
+    return embeddings
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\embeddings\__init__.py ==========
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\ingestion\asset_registry.py ==========
+
+
+import sqlite3
+from pathlib import Path
+from uuid import uuid4
+from datetime import datetime
+
+
+# Database file ka location define kar rahe hain.
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATABASE_PATH = BASE_DIR / "data" / "asset_registry.db"
+
+
+# SQLite database aur assets table create karne ke liye.
+def create_database():
+
+    # Database folder exist nahi karta toh create karenge.
+    DATABASE_PATH.parent.mkdir(parents=True, exist_ok=True)
+
+    # Database se connection establish kar rahe hain.
+    connection = sqlite3.connect(DATABASE_PATH)
+
+    # SQL queries execute karne ke liye cursor bana rahe hain.
+    cursor = connection.cursor()
+
+    # Assets table create kar rahe hain agar pehle se exist nahi karti.
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS assets (
+
+            asset_id TEXT PRIMARY KEY,
+            filename TEXT NOT NULL,
+            modality TEXT NOT NULL,
+            owner TEXT NOT NULL,
+            permission_scope TEXT NOT NULL,
+            processing_status TEXT NOT NULL,
+            created_at TEXT NOT NULL
+
+        )
+    """)
+
+    # Database changes save kar rahe hain.
+    connection.commit()
+
+    # Database connection close kar rahe hain.
+    connection.close()
+
+
+# New asset ko database mein register karne ke liye.
+def register_asset(filename, modality, owner, permission_scope):
+
+    # Har asset ke liye unique ID generate kar rahe hain.
+    asset_id = str(uuid4())
+
+    # Database connection create kar rahe hain.
+    connection = sqlite3.connect(DATABASE_PATH)
+
+    # SQL queries execute karne ke liye cursor bana rahe hain.
+    cursor = connection.cursor()
+
+    # Asset ki details database mein insert kar rahe hain.
+    cursor.execute("""
+        INSERT INTO assets (
+            asset_id,
+            filename,
+            modality,
+            owner,
+            permission_scope,
+            processing_status,
+            created_at
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    """, (
+        asset_id,
+        filename,
+        modality,
+        owner,
+        permission_scope,
+        "uploaded",
+        datetime.now().isoformat()
+    ))
+
+    # Registered asset ki details save kar rahe hain.
+    connection.commit()
+
+    # Database connection close kar rahe hain.
+    connection.close()
+
+    # Generated unique asset ID return kar rahe hain.
+    return asset_id
+
+
+# Database mein registered saare assets retrieve karne ke liye.
+def get_all_assets():
+
+    # Database connection create kar rahe hain.
+    connection = sqlite3.connect(DATABASE_PATH)
+
+    # SQL queries execute karne ke liye cursor bana rahe hain.
+    cursor = connection.cursor()
+
+    # Saare assets latest registration ke order mein retrieve kar rahe hain.
+    cursor.execute(
+        "SELECT * FROM assets ORDER BY created_at DESC"
+    )
+
+    # Database se saare records fetch kar rahe hain.
+    assets = cursor.fetchall()
+
+    # Database connection close kar rahe hain.
+    connection.close()
+
+    # Retrieved assets return kar rahe hain.
+    return assets
+
+
+# Check karne ke liye ki user ko asset access karne ki permission hai ya nahi.
+def check_asset_permission(asset_id, user):
+
+    # Database connection create kar rahe hain.
+    connection = sqlite3.connect(DATABASE_PATH)
+
+    # SQL queries execute karne ke liye cursor bana rahe hain.
+    cursor = connection.cursor()
+
+    # Given asset ki owner aur permission details retrieve kar rahe hain.
+    cursor.execute("""
+        SELECT owner, permission_scope
+        FROM assets
+        WHERE asset_id = ?
+    """, (asset_id,))
+
+    # Matching asset ka record fetch kar rahe hain.
+    result = cursor.fetchone()
+
+    # Database connection close kar rahe hain.
+    connection.close()
+
+    # Asset database mein nahi mila toh access deny karenge.
+    if result is None:
+        return False
+
+    # Database se owner aur permission scope nikal rahe hain.
+    owner, permission_scope = result
+
+    # Owner ya public asset ko access allow kar rahe hain.
+    if owner == user or permission_scope == "public":
+        return True
+
+    # Baaki users ke liye access deny kar rahe hain.
+    return False
+
+
+# Asset ka processing status update karne ke liye.
+def update_asset_status(asset_id, new_status):
+
+    # Database connection create kar rahe hain.
+    connection = sqlite3.connect(DATABASE_PATH)
+
+    # SQL queries execute karne ke liye cursor bana rahe hain.
+    cursor = connection.cursor()
+
+    # Given asset ka processing status update kar rahe hain.
+    cursor.execute("""
+        UPDATE assets
+        SET processing_status = ?
+        WHERE asset_id = ?
+    """, (new_status, asset_id))
+
+    # Updated status database mein save kar rahe hain.
+    connection.commit()
+
+    # Check kar rahe hain ki koi record update hua ya nahi.
+    updated_rows = cursor.rowcount
+
+    # Database connection close kar rahe hain.
+    connection.close()
+
+    # Update successful hone par True return kar rahe hain.
+    return updated_rows > 0
+
+
+# Database se asset record aur uploaded file delete karne ke liye.
+def delete_asset(asset_id):
+
+    # Database connection create kar rahe hain.
+    connection = sqlite3.connect(DATABASE_PATH)
+
+    # SQL queries execute karne ke liye cursor bana rahe hain.
+    cursor = connection.cursor()
+
+    # Asset ka filename retrieve kar rahe hain.
+    cursor.execute(
+        "SELECT filename FROM assets WHERE asset_id = ?",
+        (asset_id,)
+    )
+
+    # Matching asset ka record fetch kar rahe hain.
+    result = cursor.fetchone()
+
+    # Asset nahi mila toh deletion stop kar rahe hain.
+    if result is None:
+        connection.close()
+        return False
+
+    # Database record se filename nikal rahe hain.
+    filename = result[0]
+
+    # Database se asset ka record delete kar rahe hain.
+    cursor.execute(
+        "DELETE FROM assets WHERE asset_id = ?",
+        (asset_id,)
+    )
+
+    # Database changes save kar rahe hain.
+    connection.commit()
+
+    # Database connection close kar rahe hain.
+    connection.close()
+
+    # Uploaded file ka actual path define kar rahe hain.
+    file_path = BASE_DIR / "data" / "uploads" / filename
+
+    # File exist karti hai toh physical file delete kar rahe hain.
+    if file_path.exists():
+        file_path.unlink()
+
+    # Successful deletion par True return kar rahe hain.
+    return True
+
+
+# Module import hone par database automatically create kar rahe hain.
+create_database()
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\ingestion\file_validator.py ==========
+
+
+from pathlib import Path
+
+
+# Supported file formats
+SUPPORTED_FORMATS = {
+    ".mp4": "video",
+    ".mov": "video",
+    ".mp3": "audio",
+    ".wav": "audio",
+    ".pdf": "document",
+    ".png": "image",
+    ".jpg": "image",
+    ".jpeg": "image",
+    ".txt": "text",
+    ".csv": "quiz"
+}
+
+
+# Maximum file size: 200 MB
+MAX_FILE_SIZE = 200 * 1024 * 1024
+
+
+def validate_file(file_path):
+
+    file_path = Path(file_path)
+
+    # Check whether file exists
+    if not file_path.exists():
+        return False, "File does not exist", None
+
+    # Check whether it is a file
+    if not file_path.is_file():
+        return False, "Path is not a file", None
+
+    # Check file extension
+    extension = file_path.suffix.lower()
+
+    if extension not in SUPPORTED_FORMATS:
+        return False, "Unsupported file format", None
+
+    # Check empty file
+    if file_path.stat().st_size == 0:
+        return False, "File is empty", None
+
+    # Check maximum size
+    if file_path.stat().st_size > MAX_FILE_SIZE:
+        return False, "File exceeds 200 MB limit", None
+
+    modality = SUPPORTED_FORMATS[extension]
+
+    return True, "File validation successful", modality
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\ingestion\__init__.py ==========
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\audio_metadata.py ==========
+
+
+import json  # Metadata ko JSON format mein save karne ke liye.
+
+from pathlib import Path  # Project folders aur file paths handle karne ke liye.
+
+from datetime import datetime, timezone  # Processing ka UTC time record karne ke liye.
+
+
+def create_audio_metadata(audio_path, asset_id, segments):  # Audio ki final metadata create karne ke liye.
+
+    audio_path = Path(audio_path)  # Audio file ka path convert kar rahe hain.
+
+    project_dir = Path(__file__).resolve().parent.parent  # Project ka main folder identify kar rahe hain.
+
+    output_dir = project_dir / "data" / "processed" / asset_id  # Audio ka processed folder define kar rahe hain.
+
+    output_dir.mkdir(parents=True, exist_ok=True)  # Folder missing hone par create kar rahe hain.
+
+    metadata = {  # Final audio metadata dictionary bana rahe hain.
+
+        "asset_id": asset_id,  # Audio ki unique ID save kar rahe hain.
+
+        "source_file": audio_path.name,  # Original audio filename save kar rahe hain.
+
+        "modality": "audio",  # Asset ki modality define kar rahe hain.
+
+        "total_segments": len(segments),  # Total transcript segments count kar rahe hain.
+
+        "segments": segments,  # Saare transcript segments aur timestamps save kar rahe hain.
+
+        "processing_status": "completed",  # Processing status save kar rahe hain.
+
+        "processed_at": datetime.now(timezone.utc).isoformat()  # Processing ka UTC timestamp save kar rahe hain.
+
+    }
+
+    output_path = output_dir / "metadata.json"  # Metadata JSON file ka path define kar rahe hain.
+
+    with open(output_path, "w", encoding="utf-8") as file:  # JSON file write mode mein open kar rahe hain.
+
+        json.dump(metadata, file, indent=4, ensure_ascii=False)  # Readable JSON format mein save kar rahe hain.
+
+    return metadata  # Final metadata return kar rahe hain.
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\audio_processor.py ==========
+
+
+from faster_whisper import WhisperModel
+# Faster-Whisper se speech-to-text generate karne ke liye.
+
+from pathlib import Path
+# Audio file ka path handle karne ke liye.
+
+
+model = WhisperModel("base", device="cpu", compute_type="int8")
+# Base model CPU par load kar rahe hain.
+
+
+def process_audio(audio_path, asset_id):
+    # Audio processing function define kar rahe hain.
+
+    audio_path = Path(audio_path)
+    # Audio path ko Path object mein convert kar rahe hain.
+
+    if not audio_path.exists():
+        # Check kar rahe hain ki audio file available hai ya nahi.
+        raise FileNotFoundError(f"Audio not found: {audio_path}")
+        # File missing hone par error denge.
+
+    segments, info = model.transcribe(str(audio_path), language="en")
+    # Audio ko transcript segments mein convert kar rahe hain.
+
+    segments_data = []
+    # Transcript segments store karne ke liye list.
+
+    for index, segment in enumerate(segments, start=1):
+        # Har transcript segment read kar rahe hain.
+
+        segments_data.append({
+            # Segment ki structured information save kar rahe hain.
+
+            "asset_id": asset_id,
+            # Original audio ki unique ID.
+
+            "source_file": audio_path.name,
+            # Original audio filename.
+
+            "modality": "audio",
+            # Asset ki modality define kar rahe hain.
+
+            "segment_id": f"{asset_id}-SEG-{index}",
+            # Unique segment ID bana rahe hain.
+
+            "start_time": segment.start,
+            # Segment ka starting timestamp.
+
+            "end_time": segment.end,
+            # Segment ka ending timestamp.
+
+            "text": segment.text.strip()
+            # Recognized speech text save kar rahe hain.
+        })
+
+    return segments_data
+    # Saare transcript segments return kar rahe hain.
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\chunk_metadata.py ==========
+
+
+import json  # Chunk metadata ko JSON mein save karne ke liye.
+from pathlib import Path  # File aur folder paths handle karne ke liye.
+from datetime import datetime, timezone  # UTC processing time record karne ke liye.
+
+
+def create_chunk_metadata(asset_id, chunks):
+
+    # Main project folder identify kar rahe hain.
+    project_dir = Path(__file__).resolve().parent.parent
+
+    # Current asset ka processed folder select kar rahe hain.
+    output_dir = project_dir / "data" / "processed" / asset_id
+
+    # Folder missing hone par create kar rahe hain.
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Chunk metadata dictionary create kar rahe hain.
+    metadata = {
+
+        "asset_id": asset_id,  # Original asset ki unique ID.
+
+        "modality": "document",  # Chunk ka content type.
+
+        "total_chunks": len(chunks),  # Total chunks count.
+
+        "source_file": chunks[0]["source_file"] if chunks else None,  # Original filename.
+
+        "chunk_ids": [item["chunk_id"] for item in chunks],  # All chunk IDs.
+
+        "page_numbers": sorted(set(
+            item["page_number"] for item in chunks
+        )),  # Unique source page numbers.
+
+        "status": "chunked" if chunks else "empty",  # Chunking status.
+
+        "created_at": datetime.now(timezone.utc).isoformat()  # UTC timestamp.
+    }
+
+    # Metadata JSON file ka path define kar rahe hain.
+    output_path = output_dir / "chunk_metadata.json"
+
+    # Metadata ko JSON file mein save kar rahe hain.
+    output_path.write_text(
+        json.dumps(metadata, indent=4),
+        encoding="utf-8"
+    )
+
+    # Created metadata return kar rahe hain.
+    return metadata
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\discussion_metadata.py ==========
+
+
+import json  # Metadata JSON mein save karne ke liye.
+from pathlib import Path  # Folder aur file paths handle karne ke liye.
+from datetime import datetime, timezone  # UTC timestamp record karne ke liye.
+
+
+def create_discussion_metadata(asset_id, segments):  # Discussion metadata function.
+
+    project_dir = Path(__file__).resolve().parent.parent  # Main project folder identify kar rahe hain.
+
+    output_dir = project_dir / "data" / "processed" / asset_id  # Discussion output folder select kar rahe hain.
+
+    output_dir.mkdir(parents=True, exist_ok=True)  # Folder create kar rahe hain.
+
+    metadata = {
+        "asset_id": asset_id,  # Discussion asset ki unique ID.
+        "modality": "discussion",  # Asset type.
+        "total_segments": len(segments),  # Total unique discussions.
+        "source_file": segments[0]["source_file"] if segments else None,  # Original filename.
+        "status": "preprocessed" if segments else "empty",  # Processing status.
+        "segment_ids": [item["segment_id"] for item in segments],  # Sabhi segment IDs.
+        "processed_at": datetime.now(timezone.utc).isoformat()  # UTC processing time.
+    }
+
+    output_path = output_dir / "metadata.json"  # Metadata file location.
+
+    output_path.write_text(json.dumps(metadata, indent=4), encoding="utf-8")  # JSON file save.
+
+    return metadata  # Metadata return kar rahe hain.
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\discussion_processor.py ==========
+
+
+import json  # Discussion data read karne ke liye.
+import re  # Extra spaces clean karne ke liye.
+from pathlib import Path  # File paths handle karne ke liye.
+
+
+def process_discussion(discussion_path, asset_id):  # Discussion preprocessing function.
+
+    discussion_path = Path(discussion_path)  # File path convert kar rahe hain.
+
+    if not discussion_path.exists():  # Check kar rahe hain file available hai ya nahi.
+        raise FileNotFoundError(f"File not found: {discussion_path}")  # Missing file par error.
+
+    data = json.loads(discussion_path.read_text(encoding="utf-8"))  # Discussion JSON read kar rahe hain.
+
+    segments = []  # Processed discussions store karne ke liye.
+
+    seen = set()  # Duplicate discussions track karne ke liye.
+
+    for item in data["discussions"]:  # Har discussion process kar rahe hain.
+
+        content = re.sub(r"\s+", " ", item["content"]).strip()  # Extra spaces remove kar rahe hain.
+
+        if content and content.lower() not in seen:  # Empty aur duplicate content skip kar rahe hain.
+
+            seen.add(content.lower())  # Content ko duplicate tracking mein add kar rahe hain.
+
+            segments.append({
+                "asset_id": asset_id,  # Original discussion asset ID.
+                "segment_id": f"{asset_id}-DISC-{len(segments) + 1}",  # Unique segment ID.
+                "source_file": discussion_path.name,  # Original filename.
+                "author": item.get("author"),  # Discussion author record kar rahe hain.
+                "content": content,  # Clean discussion content.
+                "modality": "discussion"  # Asset modality define kar rahe hain.
+            })
+
+    return segments  # Processed discussion segments return kar rahe hain.
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\image_metadata.py ==========
+
+
+import json  # Metadata ko JSON format mein save karne ke liye.
+
+from pathlib import Path  # Project folders aur file paths handle karne ke liye.
+
+from datetime import datetime, timezone  # Processing ka UTC time record karne ke liye.
+
+
+def create_image_metadata(image_info, extracted_text):  # Image information aur OCR text combine karne ke liye.
+
+    asset_id = image_info["asset_id"]  # Image ki unique ID retrieve kar rahe hain.
+
+    project_dir = Path(__file__).resolve().parent.parent  # Project ka main folder identify kar rahe hain.
+
+    output_dir = project_dir / "data" / "processed" / asset_id  # Image ka processed data folder define kar rahe hain.
+
+    output_dir.mkdir(parents=True, exist_ok=True)  # Folder missing hone par create kar rahe hain.
+
+    metadata = {  # Final image metadata dictionary bana rahe hain.
+
+        **image_info,  # Image ki saari basic information include kar rahe hain.
+
+        "extracted_text": extracted_text,  # OCR se mila text add kar rahe hain.
+
+        "processing_status": "completed",  # Processing successful hone ka status save kar rahe hain.
+
+        "processed_at": datetime.now(timezone.utc).isoformat()  # Processing ka UTC timestamp save kar rahe hain.
+
+    }
+
+    output_path = output_dir / "metadata.json"  # Metadata JSON file ka path define kar rahe hain.
+
+    with open(output_path, "w", encoding="utf-8") as file:  # JSON file write mode mein open kar rahe hain.
+
+        json.dump(metadata, file, indent=4, ensure_ascii=False)  # Readable JSON format mein metadata save kar rahe hain.
+
+    return metadata  # Final metadata return kar rahe hain.
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\image_ocr.py ==========
+
+
+import pytesseract  # Tesseract OCR engine ko Python se use karne ke liye.
+
+from PIL import Image  # Image open karne ke liye.
+
+from pathlib import Path  # Image file path handle karne ke liye.
+# Tesseract OCR software ka Windows path set kar rahe hain.
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+
+def extract_image_text(image_path):  # Image se text extract karne ka function.
+
+    image_path = Path(image_path)  # Image path ko Path object mein convert kar rahe hain.
+
+    if not image_path.exists():  # Check kar rahe hain ki image available hai ya nahi.
+        raise FileNotFoundError(f"Image not found: {image_path}")  # Missing image par error denge.
+
+    with Image.open(image_path) as image:  # Image ko open kar rahe hain.
+
+        extracted_text = pytesseract.image_to_string(image)  # OCR se image ka readable text extract kar rahe hain.
+
+    return extracted_text.strip()  # Extra spaces remove karke text return kar rahe hain.
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\image_processor.py ==========
+
+
+
+from PIL import Image  # Image open aur process karne ke liye.
+
+from pathlib import Path  # Image file ka path handle karne ke liye.
+
+def process_image(image_path, asset_id):  # Image processing function define kar rahe hain.
+
+    image_path = Path(image_path)  # Image path ko Path object mein convert kar rahe hain.
+
+    if not image_path.exists():  # Check kar rahe hain ki image file exist karti hai ya nahi.
+        raise FileNotFoundError(f"Image not found: {image_path}")  # File missing hone par error denge.
+
+    with Image.open(image_path) as image:  # Image ko safely open kar rahe hain.
+
+        image_info = {  # Image ki basic information collect kar rahe hain.
+
+            "asset_id": asset_id,  # Image ki unique asset ID save kar rahe hain.
+
+            "source_file": image_path.name,  # Original image ka filename save kar rahe hain.
+
+            "modality": "image",  # Asset ki modality image define kar rahe hain.
+
+            "format": image.format,  # Image ka format JPEG, PNG etc. collect kar rahe hain.
+
+            "width": image.width,  # Image ki width pixels mein collect kar rahe hain.
+
+            "height": image.height,  # Image ki height pixels mein collect kar rahe hain.
+
+            "mode": image.mode,  # Image ka color mode RGB, RGBA etc. collect kar rahe hain.
+
+        }
+
+    return image_info  # Collected image information return kar rahe hain.
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\pdf_metadata.py ==========
+
+
+import json  # Metadata ko JSON format mein save karne ke liye.
+
+from pathlib import Path  # Project folders aur file paths handle karne ke liye.
+
+from datetime import datetime, timezone  # Processing ka UTC time record karne ke liye.
+
+
+def create_pdf_metadata(pdf_path, asset_id, pages):  # PDF ki final metadata create karne ka function.
+
+    pdf_path = Path(pdf_path)  # PDF file ka path convert kar rahe hain.
+
+    project_dir = Path(__file__).resolve().parent.parent  # Project ka main folder identify kar rahe hain.
+
+    output_dir = project_dir / "data" / "processed" / asset_id  # PDF ka processed data folder define kar rahe hain.
+
+    output_dir.mkdir(parents=True, exist_ok=True)  # Folder missing hone par create kar rahe hain.
+
+    metadata = {  # Final PDF metadata dictionary bana rahe hain.
+
+        "asset_id": asset_id,  # PDF ki unique ID save kar rahe hain.
+
+        "source_file": pdf_path.name,  # Original PDF filename save kar rahe hain.
+
+        "modality": "pdf",  # Asset ki modality define kar rahe hain.
+
+        "total_pages": len(pages),  # Processed PDF pages ki total counting kar rahe hain.
+
+        "pages": pages,  # Har page ka text, segment ID aur extraction method save kar rahe hain.
+
+        "processing_status": "completed",  # Processing ka status save kar rahe hain.
+
+        "processed_at": datetime.now(timezone.utc).isoformat()  # Processing ka UTC timestamp save kar rahe hain.
+
+    }
+
+    output_path = output_dir / "metadata.json"  # Metadata JSON file ka path define kar rahe hain.
+
+    with open(output_path, "w", encoding="utf-8") as file:  # JSON file write mode mein open kar rahe hain.
+
+        json.dump(metadata, file, indent=4, ensure_ascii=False)  # Readable JSON format mein data save kar rahe hain.
+
+    return metadata  # Final metadata return kar rahe hain.
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\pdf_processor.py ==========
+
+
+import fitz  # PDF pages read karne ke liye.
+
+import pytesseract  # Scanned pages se OCR text extract karne ke liye.
+
+from PIL import Image  # PDF page image ko OCR ke liye handle karne ke liye.
+
+from pathlib import Path  # File paths handle karne ke liye.
+
+import io  # PDF page image ko memory mein read karne ke liye.
+
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+
+def extract_pdf_pages(pdf_path, asset_id):  # PDF processing function.
+
+    pdf_path = Path(pdf_path)  # PDF path convert kar rahe hain.
+
+    if not pdf_path.exists():  # PDF file check kar rahe hain.
+        raise FileNotFoundError(f"PDF not found: {pdf_path}")  # Missing file par error.
+
+    pages_data = []  # Processed pages store karne ke liye list.
+
+    with fitz.open(pdf_path) as pdf:  # PDF open kar rahe hain.
+
+        for page_number, page in enumerate(pdf, start=1):  # Har page read kar rahe hain.
+
+            text = page.get_text("text").strip()  # Normal PDF text extract kar rahe hain.
+
+            extraction_method = "pymupdf"  # Default extraction method set kar rahe hain.
+
+            if not text:  # Agar page mein selectable text nahi mila.
+
+                pix = page.get_pixmap(dpi=200)  # PDF page ko image mein convert kar rahe hain.
+
+                image = Image.open(io.BytesIO(pix.tobytes("png")))  # Image ko memory se open kar rahe hain.
+
+                text = pytesseract.image_to_string(image).strip()  # OCR se scanned page ka text nikal rahe hain.
+
+                extraction_method = "tesseract_ocr"  # OCR method record kar rahe hain.
+
+            page_data = {  # Page ka structured metadata bana rahe hain.
+
+                "asset_id": asset_id,  # Original PDF ki unique ID.
+
+                "source_file": pdf_path.name,  # Original PDF filename.
+
+                "modality": "pdf",  # Asset modality.
+
+                "segment_id": f"{asset_id}-PAGE-{page_number}",  # Unique page segment ID.
+
+                "page_number": page_number,  # Original page number.
+
+                "text": text,  # Extracted page text.
+
+                "has_text": bool(text),  # Text available hai ya nahi.
+
+                "extraction_method": extraction_method  # Text kis method se nikla.
+
+            }
+
+            pages_data.append(page_data)  # Page data list mein add kar rahe hain.
+
+    return pages_data  # Saare processed pages return kar rahe hain.
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\quiz_metadata.py ==========
+
+
+import json  # Metadata ko JSON mein save karne ke liye.
+from pathlib import Path  # Folder aur file paths handle karne ke liye.
+from datetime import datetime, timezone  # UTC timestamp record karne ke liye.
+
+
+def create_quiz_metadata(asset_id, questions):  # Quiz metadata function.
+
+    project_dir = Path(__file__).resolve().parent.parent  # Main project folder identify kar rahe hain.
+
+    output_dir = project_dir / "data" / "processed" / asset_id  # Quiz output folder select kar rahe hain.
+
+    output_dir.mkdir(parents=True, exist_ok=True)  # Folder create kar rahe hain.
+
+    metadata = {
+        "asset_id": asset_id,  # Quiz ki unique ID.
+        "modality": "quiz",  # Asset type.
+        "total_questions": len(questions),  # Total unique questions.
+        "source_file": questions[0]["source_file"] if questions else None,  # Original filename.
+        "status": "preprocessed" if questions else "empty",  # Processing status.
+        "segment_ids": [item["segment_id"] for item in questions],  # Question IDs.
+        "processed_at": datetime.now(timezone.utc).isoformat()  # UTC processing time.
+    }
+
+    output_path = output_dir / "metadata.json"  # Metadata file location.
+
+    output_path.write_text(json.dumps(metadata, indent=4), encoding="utf-8")  # JSON save kar rahe hain.
+
+    return metadata  # Metadata return kar rahe hain.
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\quiz_processor.py ==========
+
+
+import json  # Quiz data read karne ke liye.
+from pathlib import Path  # File paths handle karne ke liye.
+
+
+def process_quiz(quiz_path, asset_id):  # Quiz preprocessing function.
+
+    quiz_path = Path(quiz_path)  # File path convert kar rahe hain.
+
+    if not quiz_path.exists():  # Check kar rahe hain file available hai ya nahi.
+        raise FileNotFoundError(f"Quiz file not found: {quiz_path}")  # File missing hone par error.
+
+    quiz_data = json.loads(quiz_path.read_text(encoding="utf-8"))  # JSON quiz data read kar rahe hain.
+
+    questions = []  # Processed questions store karne ke liye.
+
+    seen = set()  # Duplicate questions track karne ke liye.
+
+    for index, item in enumerate(quiz_data["questions"], start=1):  # Har question process kar rahe hain.
+
+        question = item["question"].strip()  # Question ke extra spaces remove kar rahe hain.
+
+        if question and question.lower() not in seen:  # Empty aur duplicate questions skip kar rahe hain.
+
+            seen.add(question.lower())  # Question ko duplicate tracking mein add kar rahe hain.
+
+            questions.append({
+                "asset_id": asset_id,  # Original quiz ki ID.
+                "segment_id": f"{asset_id}-QUESTION-{len(questions) + 1}",  # Unique question ID.
+                "source_file": quiz_path.name,  # Original quiz filename.
+                "question": question,  # Clean question.
+                "options": item.get("options", []),  # Question ke options.
+                "correct_answer": item.get("correct_answer"),  # Correct answer.
+                "modality": "quiz"  # Asset modality define kar rahe hain.
+            })
+
+    return questions  # Processed quiz questions return kar rahe hain.
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\text_chunker.py ==========
+
+
+from uuid import uuid4
+
+
+def create_text_chunks(
+    pages,
+    asset_id,
+    chunk_size=500,
+    overlap=50
+):
+
+    chunks = []
+
+    for page in pages:
+
+        text = page["text"]
+
+        start = 0
+
+        while start < len(text):
+
+            end = start + chunk_size
+
+            chunk_text = text[start:end].strip()
+
+            if chunk_text:
+
+                chunks.append({
+
+                    "chunk_id": str(uuid4()),
+
+                    "asset_id": asset_id,
+
+                    "source_file": page["source_file"],
+
+                    "segment_id": page.get("segment_id"),
+
+                    "page_number": page.get("page_number"),
+
+                    "modality": page.get("modality", "document"),
+
+                    "chunk_text": chunk_text
+
+                })
+
+            start = end - overlap
+
+    return chunks
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\text_metadata.py ==========
+
+
+import json  # Metadata ko JSON format mein save karne ke liye.
+from pathlib import Path  # Project folders aur file paths handle karne ke liye.
+from datetime import datetime, timezone  # Processing ka UTC time record karne ke liye.
+
+def create_text_metadata(asset_id, segments):  # Text processing ki metadata create kar rahe hain.
+
+    project_dir = Path(__file__).resolve().parent.parent  # Main project folder identify kar rahe hain.
+
+    output_dir = project_dir / "data" / "processed" / asset_id  # Current text asset ka output folder select kar rahe hain.
+
+    output_dir.mkdir(parents=True, exist_ok=True)  # Folder missing hone par create kar rahe hain.
+
+    metadata = {  # Text asset ki complete metadata dictionary bana rahe hain.
+
+        "asset_id": asset_id,  # Original text asset ki unique ID.
+
+        "modality": "text",  # Asset ka type text define kar rahe hain.
+
+        "total_segments": len(segments),  # Total processed segments count kar rahe hain.
+
+        "source_file": segments[0]["source_file"] if segments else None,  # Original filename record kar rahe hain.
+
+        "status": "preprocessed" if segments else "empty",  # Processing status record kar rahe hain.
+
+        "segment_ids": [item["segment_id"] for item in segments],  # Sabhi segment IDs collect kar rahe hain.
+
+        "processed_at": datetime.now(timezone.utc).isoformat()  # Processing ka UTC timestamp save kar rahe hain.
+    }
+
+    output_path = output_dir / "metadata.json"  # Metadata JSON file ka location define kar rahe hain.
+
+    output_path.write_text(json.dumps(metadata, indent=4), encoding="utf-8")  # Metadata JSON file mein save kar rahe hain.
+
+    return metadata  # Created metadata return kar rahe hain.
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\text_processor.py ==========
+
+
+import re  # Text cleaning ke liye.
+
+from pathlib import Path  # Text file ka path handle karne ke liye.
+
+
+def process_text(text_path, asset_id):  # Text preprocessing function define kar rahe hain.
+
+    text_path = Path(text_path)  # File path ko Path object mein convert kar rahe hain.
+
+    if not text_path.exists():  # Check kar rahe hain ki text file available hai ya nahi.
+        raise FileNotFoundError(f"Text file not found: {text_path}")  # Missing file par error denge.
+
+    content = text_path.read_text(encoding="utf-8")  # Text file ka content read kar rahe hain.
+
+    content = re.sub(r"\s+", " ", content).strip()  # Extra spaces aur line breaks clean kar rahe hain.
+
+    paragraphs = re.split(r"(?<=[.!?])\s+", content)  # Sentences ko separate segments mein divide kar rahe hain.
+
+    segments = []  # Clean text segments store karne ke liye list bana rahe hain.
+
+    seen = set()  # Duplicate sentences track karne ke liye set bana rahe hain.
+
+    for sentence in paragraphs:  # Har sentence ko process kar rahe hain.
+
+        sentence = sentence.strip()  # Sentence ke extra spaces remove kar rahe hain.
+
+        if sentence and sentence.lower() not in seen:  # Empty aur duplicate sentences skip kar rahe hain.
+
+            seen.add(sentence.lower())  # Sentence ko duplicate tracking mein add kar rahe hain.
+
+            segments.append({  # Structured text segment bana rahe hain.
+
+                "asset_id": asset_id,  # Original asset ki unique ID.
+
+                "source_file": text_path.name,  # Original text filename.
+
+                "modality": "text",  # Asset ki modality define kar rahe hain.
+
+                "segment_id": f"{asset_id}-SEG-{len(segments) + 1}",  # Unique segment ID bana rahe hain.
+
+                "text": sentence  # Clean sentence save kar rahe hain.
+
+            })
+
+    return segments  # Saare clean segments return kar rahe hain.
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\transcript_processor.py ==========
+
+
+from faster_whisper import WhisperModel
+# Faster-Whisper audio ko text mein convert karne ke liye hai.
+
+from pathlib import Path
+# File aur folder ke paths handle karne ke liye hai.
+
+from uuid import uuid4
+# Har transcript segment ko unique ID dene ke liye hai.
+
+
+def transcribe_video(video_path, asset_id):
+    # Ye function video ki audio ko transcript mein convert karega.
+
+    video_path = Path(video_path)
+    # Video path ko Path format mein convert kar rahe hain.
+
+    if not video_path.exists():
+        # Check kar rahe hain ki video file exist karti hai ya nahi.
+
+        raise FileNotFoundError("Video file not found")
+        # Video nahi mili to error show hoga.
+
+    project_dir = Path(__file__).resolve().parent.parent
+    # Project ka main folder identify kar rahe hain.
+
+    output_dir = project_dir / "data" / "processed" / asset_id / "transcripts"
+    # Transcript save karne ke liye output folder bana rahe hain.
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    # Folder nahi hai to automatically create kar rahe hain.
+
+    model = WhisperModel("base", device="cpu", compute_type="int8")
+    # Base Whisper model CPU par load kar rahe hain.
+
+    segments, info = model.transcribe(
+        str(video_path),
+        # Video file ko transcription ke liye de rahe hain.
+
+        beam_size=5,
+        # Transcription ke liye search quality setting de rahe hain.
+
+        vad_filter=True
+        # Unnecessary silence ko filter kar rahe hain.
+    )
+    # Video ki audio se transcript generate kar rahe hain.
+
+    transcript_segments = []
+    # Transcript segments store karne ke liye empty list bana rahe hain.
+
+    for segment in segments:
+        # Transcript ke har segment par loop chala rahe hain.
+
+        segment_info = {
+            "segment_id": f"SEG-{uuid4().hex[:8]}",
+            # Har transcript segment ko unique ID de rahe hain.
+
+            "asset_id": asset_id,
+            # Original video ki asset ID link kar rahe hain.
+
+            "start": round(segment.start, 2),
+            # Segment ka starting timestamp seconds mein save kar rahe hain.
+
+            "end": round(segment.end, 2),
+            # Segment ka ending timestamp seconds mein save kar rahe hain.
+
+            "text": segment.text.strip(),
+            # Recognized spoken words ko clean karke save kar rahe hain.
+
+            "modality": "video_transcript"
+            # Data ka modality type identify kar rahe hain.
+        }
+        # Current transcript segment ki metadata bana rahe hain.
+
+        transcript_segments.append(segment_info)
+        # Segment ko transcript list mein add kar rahe hain.
+
+    transcript_path = output_dir / "transcript.txt"
+    # Transcript text file ka path bana rahe hain.
+
+    with open(transcript_path, "w", encoding="utf-8") as file:
+        # UTF-8 encoding ke saath transcript file open kar rahe hain.
+
+        for segment in transcript_segments:
+            # Har transcript segment par loop chala rahe hain.
+
+            file.write(
+                f"[{segment['start']} - {segment['end']}] "
+                f"{segment['text']}\n"
+            )
+            # Timestamp aur spoken text file mein save kar rahe hain.
+
+    return transcript_segments
+    # Saare transcript segments return kar rahe hain.
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\video_aligner.py ==========
+
+
+import json
+# JSON file mein aligned data save karne ke liye library import kar rahe hain.
+
+from pathlib import Path
+# Output file ka location handle karne ke liye Path import kar rahe hain.
+
+
+def align_frames_with_transcript(frames, transcript_segments, asset_id, interval_seconds=5):
+    # Video frames aur transcript ko timestamps ke basis par connect kar rahe hain.
+
+    aligned_data = []
+    # Aligned information store karne ke liye empty list bana rahe hain.
+
+    for frame in frames:
+        # Har extracted video frame ko check kar rahe hain.
+
+        frame_time = frame["timestamp_seconds"]
+        # Frame ka timestamp already seconds mein hai, isliye conversion ki zaroorat nahi.
+        
+
+        window_end = frame_time + interval_seconds
+        # Frame ke timestamp se agle 5 seconds ka time window bana rahe hain.
+
+        matching_segments = []
+        # Matching transcript segments store karne ke liye empty list bana rahe hain.
+
+        for segment in transcript_segments:
+            # Har transcript segment ko check kar rahe hain.
+
+            if segment["start"] < window_end and segment["end"] >= frame_time:
+                # Check kar rahe hain ki transcript aur video ka time overlap karta hai ya nahi.
+
+                matching_segments.append({
+                    "segment_id": segment["segment_id"],
+                    # Transcript segment ki unique ID save kar rahe hain.
+
+                    "start": segment["start"],
+                    # Transcript ka starting timestamp save kar rahe hain.
+
+                    "end": segment["end"],
+                    # Transcript ka ending timestamp save kar rahe hain.
+
+                    "text": segment["text"]
+                    # Transcript ke spoken words save kar rahe hain.
+                })
+                # Matching transcript ki information list mein add kar rahe hain.
+
+        aligned_data.append({
+            "asset_id": asset_id,
+            # Original video ki asset ID save kar rahe hain.
+
+            "frame_id": frame["frame_id"],
+            # Extracted frame ki unique ID save kar rahe hain.
+
+            "timestamp": frame["timestamp_seconds"],
+            # Frame ka timestamp seconds mein JSON mein save kar rahe hain.,
+            # Video frame ka timestamp save kar rahe hain.
+
+            "frame_path": frame["frame_path"],
+            # Frame image ka location save kar rahe hain.
+
+            "modality": "video_frame_transcript",
+            # Aligned data ka modality type identify kar rahe hain.
+
+            "transcript_segments": matching_segments,
+            # Frame se related transcript segments save kar rahe hain.
+
+            "status": "matched" if matching_segments else "no_transcript_match"
+            # Match mila ya nahi, uska status save kar rahe hain.
+        })
+        # Current frame aur transcript ki combined information save kar rahe hain.
+
+    project_dir = Path(__file__).resolve().parent.parent
+    # Project ka main folder identify kar rahe hain.
+
+    output_dir = project_dir / "data" / "processed" / asset_id
+    # Aligned data save karne ka folder path bana rahe hain.
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    # Output folder nahi hai to automatically create kar rahe hain.
+
+    output_file = output_dir / "alignment.json"
+    # Alignment JSON file ka path bana rahe hain.
+
+    with open(output_file, "w", encoding="utf-8") as file:
+        # JSON file ko writing mode mein open kar rahe hain.
+
+        json.dump(aligned_data, file, indent=4, ensure_ascii=False)
+        # Aligned frames aur transcript ko readable JSON format mein save kar rahe hain.
+
+    return aligned_data
+    # Complete aligned data return kar rahe hain.
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\video_metadata.py ==========
+
+
+import json
+# Metadata ko JSON format mein save karne ke liye.
+
+from pathlib import Path
+# Project folders aur file paths handle karne ke liye.
+
+from datetime import datetime, timezone
+# Processing complete hone ka UTC time record karne ke liye.
+
+
+def create_video_metadata(asset_id, frames, segments, aligned_data):
+    # Video processing ke results se central metadata bana rahe hain.
+
+    project_dir = Path(__file__).resolve().parent.parent
+    # Project ka main folder identify kar rahe hain.
+
+    output_dir = project_dir / "data" / "processed" / asset_id
+    # Current video ke processed data ka folder select kar rahe hain.
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    # Folder missing hone par automatically create kar rahe hain.
+
+    matched_frames = sum(
+        1 for item in aligned_data if item["status"] == "matched"
+    )
+    # Kitne frames ke saath transcript match hua, uski counting kar rahe hain.
+
+    unmatched_frames = len(aligned_data) - matched_frames
+    # Kitne frames ke saath transcript match nahi hua, calculate kar rahe hain.
+
+    metadata = {
+        "asset_id": asset_id,
+        # Original video ki unique ID save kar rahe hain.
+
+        "modality": "video",
+        # Asset ka type video identify kar rahe hain.
+
+        "processing_status": "preprocessed",
+        # Video preprocessing complete hone ka status save kar rahe hain.
+
+        "total_frames": len(frames),
+        # Total extracted frames ki counting save kar rahe hain.
+
+        "total_transcript_segments": len(segments),
+        # Total transcript segments ki counting save kar rahe hain.
+
+        "total_aligned_frames": matched_frames,
+        # Transcript se match hue frames ki counting save kar rahe hain.
+
+        "unmatched_frames": unmatched_frames,
+        # Transcript match nahi hue frames ki counting save kar rahe hain.
+
+        "frame_interval_seconds": 5,
+        # Frames extract karne ka interval record kar rahe hain.
+
+        "source_file": frames[0]["source_file"] if frames else None,
+        # Available frame metadata se original video filename le rahe hain.
+
+        "processed_at": datetime.now(timezone.utc).isoformat()
+        # Processing ka UTC date aur time save kar rahe hain.
+    }
+    # Video processing ki complete summary bana rahe hain.
+
+    metadata_path = output_dir / "metadata.json"
+    # Metadata JSON file ka output path bana rahe hain.
+
+    with open(metadata_path, "w", encoding="utf-8") as file:
+        # Metadata file ko writing mode mein open kar rahe hain.
+
+        json.dump(metadata, file, indent=4, ensure_ascii=False)
+        # Metadata ko readable JSON format mein save kar rahe hain.
+
+    return metadata
+    # Complete metadata dictionary return kar rahe hain.
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\video_processor.py ==========
+
+
+import cv2
+# OpenCV library video ko read aur frames extract karne ke liye hai.
+
+from pathlib import Path
+# Path folders aur file locations handle karne ke liye hai.
+
+from uuid import uuid4
+# Har extracted frame ko unique ID dene ke liye hai.
+
+
+def extract_video_frames(video_path, asset_id, interval_seconds=5):
+    # Ye function video se fixed interval par frames extract karega.
+
+    video_path = Path(video_path)
+    # Video file ke path ko Path format mein convert kar rahe hain.
+
+    if not video_path.exists():
+        # Check kar rahe hain ki video file exist karti hai ya nahi.
+
+        raise FileNotFoundError("Video file not found")
+        # File nahi mili to error show hoga.
+
+    if video_path.suffix.lower() not in [".mp4", ".mov"]:
+        # Check kar rahe hain ki video MP4 ya MOV format mein hai.
+
+        raise ValueError("Only MP4 and MOV videos are supported")
+        # Doosra format hua to error show hoga.
+
+    if interval_seconds <= 0:
+        # Check kar rahe hain ki frame interval zero ya negative na ho.
+
+        raise ValueError("Interval must be greater than zero")
+        # Galat interval hone par error show hoga.
+
+    project_dir = Path(__file__).resolve().parent.parent
+    # Project ka main folder locate kar rahe hain.
+
+    output_dir = project_dir / "data" / "processed" / asset_id / "frames"
+    # Is video ke frames save karne ke liye folder ka path bana rahe hain.
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    # Folder exist nahi karta to automatically create hoga.
+
+    cap = cv2.VideoCapture(str(video_path))
+    # OpenCV ke through video open kar rahe hain.
+
+    if not cap.isOpened():
+        # Check kar rahe hain ki video successfully open hui ya nahi.
+
+        raise ValueError("Unable to open video")
+        # Video open nahi hui to error show hoga.
+
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    # Video ke frames per second (FPS) read kar rahe hain.
+
+    if fps <= 0:
+        # Check kar rahe hain ki FPS valid hai ya nahi.
+
+        cap.release()
+        # Video resource release kar rahe hain.
+
+        raise ValueError("Invalid video FPS")
+        # FPS invalid hua to error show hoga.
+
+    frame_step = max(1, round(fps * interval_seconds))
+    # Calculate kar rahe hain ki kitne frames skip karne hain.
+
+    extracted_frames = []
+    # Extracted frames ki information is list mein store hogi.
+
+    frame_index = 0
+    # Video ka frame counter zero se start hoga.
+
+    try:
+        # Video processing ko safely run karne ke liye try block.
+
+        while True:
+            # Jab tak video mein frames milte rahenge, loop chalega.
+
+            success, frame = cap.read()
+            # Video se next frame read kar rahe hain.
+
+            if not success:
+                # Agar frame nahi mila to video khatam ho gayi.
+
+                break
+                # Loop stop kar rahe hain.
+
+            if frame_index % frame_step == 0:
+                # Check kar rahe hain ki ye frame extract karna hai ya nahi.
+
+                timestamp = frame_index / fps
+                # Frame ka timestamp seconds mein calculate kar rahe hain.
+
+                frame_id = str(uuid4())
+                # Frame ko unique ID de rahe hain.
+
+                frame_name = f"frame_{frame_index:06d}.jpg"
+                # Frame ka filename create kar rahe hain.
+
+                frame_path = output_dir / frame_name
+                # Frame save karne ki location bana rahe hain.
+
+                saved = cv2.imwrite(str(frame_path), frame)
+                # Extracted image ko JPG file mein save kar rahe hain.
+
+                if not saved:
+                    # Check kar rahe hain ki image successfully save hui ya nahi.
+
+                    raise ValueError("Unable to save extracted frame")
+                    # Save failure hone par error show hoga.
+
+                extracted_frames.append({
+                    # Frame ki details list mein add kar rahe hain.
+
+                    "frame_id": frame_id,
+                    # Har frame ki unique identity.
+
+                    "asset_id": asset_id,
+                    # Original video ki asset identity.
+
+                    "source_file": video_path.name,
+                    # Original video ka filename.
+
+                    "timestamp_seconds": round(timestamp, 2),
+                    # Video mein frame kis time par tha.
+
+                    "frame_path": str(frame_path),
+                    # Extracted image ki file location.
+
+                    "modality": "video_frame"
+                    # Batata hai ki ye image video se extract hui hai.
+                })
+                # Frame ki saari metadata information complete.
+
+            frame_index += 1
+            # Agle frame ke liye counter increase kar rahe hain.
+
+    finally:
+        # Processing complete ho ya error aaye, ye block chalega.
+
+        cap.release()
+        # Video resource release kar rahe hain.
+
+    return extracted_frames
+    # Extracted frames ki complete information return kar rahe hain.
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\preprocessing\__init__.py ==========
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\rag\answer_generator.py ==========
+
+
+# Environment variables access karna.
+import os
+
+# .env file se API key load karna.
+from dotenv import load_dotenv
+
+# Gemini model import karna.
+from langchain_google_genai import ChatGoogleGenerativeAI
+
+# Prompt creation function import karna.
+from rag.prompt_templates import create_prompt
+
+
+# Environment variables load karna.
+load_dotenv()
+
+
+# Gemini LLM initialize karne ka function.
+def get_llm():
+
+    # API key environment se read karna.
+    api_key = os.getenv("GEMINI_API_KEY")
+
+    # API key missing hone par error dena.
+    if not api_key:
+        raise ValueError("GEMINI_API_KEY not found in .env")
+
+    # Gemini model initialize karna.
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-3.5-flash-lite",
+        google_api_key=api_key,
+        temperature=0
+    )
+
+    # Initialized model return karna.
+    return llm
+
+
+# GenAI answer generation function.
+def generate_answer(question, evidence, llm):
+
+    # Empty evidence check karna.
+    if not evidence:
+        return {
+            "answer": "Insufficient evidence to answer this question.",
+            "evidence_gaps": "No relevant evidence was retrieved."
+        }
+
+    # Structured prompt prepare karna.
+    prompt = create_prompt(question, evidence)
+
+    # LLM se answer generate karna.
+    response = llm.invoke(prompt)
+
+    # AI response content return karna.
+    if hasattr(response, "content"):
+        return response.content
+
+    # Final response return karna.
+    return response
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\rag\assistant.py ==========
+
+# Evidence retrieval function import karna.
+from retrieval.evidence_retriever import retrieve_evidence
+
+# Retrieval planner import karna.
+from agents.retrieval_planner import plan_retrieval
+
+# Synthesis writer import karna.
+from agents.synthesis_writer import synthesize_answer
+
+# Gemini initialization function import karna.
+from rag.answer_generator import get_llm
+
+
+# Complete AI assistant workflow.
+def run_assistant(question, k=3, llm=None):
+
+    # User query ke liye retrieval plan generate karna.
+    retrieval_plan = plan_retrieval(question, k=k)
+
+    # Planner ke modality filters ke according evidence retrieve karna.
+    evidence = retrieve_evidence(
+        question,
+        k=retrieval_plan["top_k"],
+        modality_filters=retrieval_plan["modality_filters"]
+    )
+
+    # Evidence available hone par Gemini initialize karna.
+    if evidence and llm is None:
+        llm = get_llm()
+
+    # Synthesis writer se answer generate aur validate karna.
+    synthesis_result = synthesize_answer(
+        question,
+        evidence,
+        llm
+    )
+
+    # Complete assistant response prepare karna.
+    return {
+        "question": question,
+        "retrieval_plan": retrieval_plan,
+        "evidence": evidence,
+        "answer": synthesis_result["answer"],
+        "validation": synthesis_result["validation"],
+        "evidence_count": synthesis_result["evidence_count"],
+        "evidence_gaps": synthesis_result["evidence_gaps"],
+        "status": synthesis_result["status"]
+    }
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\rag\embedding_generator.py ==========
+
+
+from sentence_transformers import SentenceTransformer
+
+
+# Local embedding model load kar rahe hain.
+MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
+
+model = SentenceTransformer(MODEL_NAME)
+
+
+def generate_embeddings(chunks):
+
+    # Har chunk ka text extract kar rahe hain.
+    texts = [chunk["chunk_text"] for chunk in chunks]
+
+    # Text ko numerical vectors mein convert kar rahe hain.
+    embeddings = model.encode(
+        texts,
+        convert_to_numpy=True,
+        normalize_embeddings=True
+    )
+
+    # Original chunks aur unke embeddings return kar rahe hain.
+    return embeddings
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\rag\prompt_templates.py ==========
+
+
+# LangChain prompt template import karna.
+from langchain_core.prompts import ChatPromptTemplate
+
+
+# System prompt define karna.
+SYSTEM_PROMPT = """
+ROLE:
+You are a Coursera Multimodal Learning Assistant.
+
+TASK:
+Analyze the learner's question using the supplied evidence.
+Explain learning difficulties and suggest useful recommendations.
+
+EVIDENCE:
+Use only the structured evidence provided below.
+Each evidence item may contain content, metadata and distance score.
+
+CONSTRAINTS:
+1. Never create unsupported facts.
+2. Do not use knowledge outside the supplied evidence.
+3. Preserve source IDs and segment IDs.
+4. Mention timestamps and modality when available.
+5. If evidence is insufficient, clearly say so.
+6. Recommendations must be actionable.
+7. Final decisions belong to a human reviewer.
+
+OUTPUT SCHEMA:
+Return a structured response containing:
+
+answer:
+A clear answer to the learner's question.
+
+friction_explanation:
+Explain the identified learning difficulty.
+
+recommendations:
+Provide practical recommendations.
+
+citations:
+List supporting source IDs, segment IDs and timestamps.
+
+evidence_gaps:
+Mention missing or insufficient evidence.
+
+VALIDATION:
+Every factual claim must be supported by supplied evidence.
+Never invent citations or metadata.
+"""
+
+
+# Human prompt define karna.
+HUMAN_PROMPT = """
+LEARNER QUESTION:
+{question}
+
+RETRIEVED EVIDENCE:
+{evidence}
+
+Analyze the question and return the required structured response.
+"""
+
+
+# System aur human prompts ko combine karna.
+PROMPT_TEMPLATE = ChatPromptTemplate.from_messages(
+    [
+        ("system", SYSTEM_PROMPT),
+        ("human", HUMAN_PROMPT)
+    ]
+)
+
+
+# Final prompt prepare karne ka function.
+def create_prompt(question, evidence):
+
+    # Question aur evidence ko prompt mein insert karna.
+    prompt = PROMPT_TEMPLATE.invoke(
+        {
+            "question": question,
+            "evidence": evidence
+        }
+    )
+
+    # Prepared prompt return karna.
+    return prompt
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\rag\vector_store.py ==========
+
+# FAISS vector database import karna.
+from langchain_community.vectorstores import FAISS
+
+# HuggingFace embedding model import karna.
+from langchain_huggingface import HuggingFaceEmbeddings
+
+
+# Local embedding model initialize karna.
+embeddings_model = HuggingFaceEmbeddings(
+    model_name="sentence-transformers/all-MiniLM-L6-v2"
+)
+
+
+# FAISS vector database create karna.
+def create_vector_store(chunks):
+
+    # Chunk text ko documents ke format mein convert karna.
+    texts = [chunk["chunk_text"] for chunk in chunks]
+
+    # Chunk metadata preserve karna.
+    metadatas = [
+        {
+            key: value
+            for key, value in chunk.items()
+            if key not in ["chunk_text"]
+        }
+        for chunk in chunks
+    ]
+
+    # LangChain FAISS vector store create karna.
+    vector_store = FAISS.from_texts(
+        texts=texts,
+        embedding=embeddings_model,
+        metadatas=metadatas
+    )
+
+    # Created vector store return karna.
+    return vector_store
+
+
+# Vector database save karna.
+def save_vector_store(vector_store, path="data/vector_store"):
+
+    # FAISS database ko local storage mein save karna.
+    vector_store.save_local(path)
+
+    # Success message print karna.
+    print("Vector store saved successfully!")
+
+
+# Saved vector database load karna.
+def load_vector_store(path="data/vector_store"):
+
+    # Local FAISS database load karna.
+    vector_store = FAISS.load_local(
+        path,
+        embeddings_model,
+        allow_dangerous_deserialization=True
+    )
+
+    # Loaded vector store return karna.
+    return vector_store
+
+
+# Similarity search with optional modality filtering.
+def search_vector_store(
+    vector_store,
+    query,
+    k=3,
+    modality_filters=None
+):
+
+    # Default mein metadata filter disabled rakhna.
+    metadata_filter = None
+
+    # Check karna ki modality filters available hain.
+    if modality_filters:
+
+        # Requested modalities ke according metadata filter banana.
+        metadata_filter = {
+            "modality": {
+                "$in": modality_filters
+            }
+        }
+
+    # FAISS se relevant documents aur distance scores retrieve karna.
+    results = vector_store.similarity_search_with_score(
+        query,
+        k=k,
+        filter=metadata_filter,
+        fetch_k=max(k * 10, 20)
+    )
+
+    # Retrieved results return karna.
+    return results
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\recommendations\friction_detector.py ==========
+
+
+# Student ki learning difficulties detect karne ke liye function.
+def detect_friction(student_activity):
+
+    # Detected problems store karne ke liye empty list.
+    friction_points = []
+
+    # Student ki activity mein quiz score check karna.
+    quiz_score = student_activity.get("quiz_score", 100)
+
+    # Agar quiz score 50 se kam hai.
+    if quiz_score < 50:
+
+        # Low quiz performance ko learning difficulty maana jayega.
+        friction_points.append("Low quiz performance")
+
+    # Student ki repeated mistakes count karna.
+    repeated_mistakes = student_activity.get("repeated_mistakes", 0)
+
+    # Agar mistakes 3 ya usse zyada hain.
+    if repeated_mistakes >= 3:
+
+        # Repeated mistakes ko friction point mein add karna.
+        friction_points.append("Repeated mistakes detected")
+
+    # Student ki help requests count karna.
+    help_requests = student_activity.get("help_requests", 0)
+
+    # Agar student ne 5 ya usse zyada baar help maangi.
+    if help_requests >= 5:
+
+        # Frequent help requests ko difficulty maana jayega.
+        friction_points.append("Frequent help requests")
+
+    # Final detected difficulties return karna.
+    return friction_points
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\retrieval\evidence_ranker.py ==========
+
+
+# Evidence ranking function.
+def rank_evidence(evidence):
+
+    # Empty evidence check karna.
+    if not evidence:
+        return []
+
+    # FAISS L2 distance mein lower score better hota hai.
+    ranked_evidence = sorted(
+        evidence,
+        key=lambda item: item["score"]
+    )
+
+    # Ranked evidence return karna.
+    return ranked_evidence
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\retrieval\evidence_retriever.py ==========
+
+# Query processor import karna.
+from retrieval.query_processor import process_query
+
+# FAISS database functions import karna.
+from database.chroma_manager import load_database, search_database
+
+# Evidence ranker import karna.
+from retrieval.evidence_ranker import rank_evidence
+
+
+# Relevant evidence retrieve karne ka function.
+def retrieve_evidence(query, k=3, modality_filters=None):
+
+    # User query clean karna.
+    clean_query = process_query(query)
+
+    # Saved FAISS database load karna.
+    vector_store = load_database()
+
+    # FAISS se filtered documents aur scores retrieve karna.
+    results = search_database(
+        vector_store,
+        clean_query,
+        k=k,
+        modality_filters=modality_filters
+    )
+
+    # Structured evidence list create karna.
+    evidence = []
+
+    # Har document aur uske score ko process karna.
+    for document, score in results:
+
+        # Document content, metadata aur score store karna.
+        evidence_item = {
+            "content": document.page_content,
+            "metadata": document.metadata,
+            "score": float(score)
+        }
+
+        # Evidence list mein add karna.
+        evidence.append(evidence_item)
+
+    # Evidence ko relevance ke according rank karna.
+    ranked_evidence = rank_evidence(evidence)
+
+    # Final ranked evidence return karna.
+    return ranked_evidence
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\retrieval\query_processor.py ==========
+
+
+import re
+
+
+# User query ko clean aur prepare karna.
+def process_query(query):
+
+    # Query string validate karna.
+    if not isinstance(query, str):
+        raise TypeError("Query must be a string")
+
+    # Extra spaces remove karna.
+    query = query.strip()
+
+    # Multiple spaces ko single space banana.
+    query = re.sub(r"\s+", " ", query)
+
+    # Empty query check karna.
+    if not query:
+        raise ValueError("Query cannot be empty")
+
+    # Clean query return karna.
+    return query
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\retrieval\__init__.py ==========
+
+
+
+========== FILE: C:\Users\MCC\OneDrive\Desktop\Coursera multimodel GenAI\review\review_manager.py ==========
+
+
+# AI recommendation ko review karne ke liye function.
+def review_recommendation(recommendation, status):
+
+    # Allowed review statuses define karna.
+    allowed_statuses = ["approved", "rejected", "pending"]
+
+    # Check karna ki diya gaya status valid hai ya nahi.
+    if status not in allowed_statuses:
+
+        # Invalid status hone par error return karna.
+        return {
+            "success": False,
+            "message": "Invalid review status."
+        }
+
+    # Recommendation aur uska review status store karna.
+    review_result = {
+        "recommendation": recommendation,
+        "status": status,
+        "success": True
+    }
+
+    # Final review result return karna.
+    return review_result
+

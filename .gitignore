@@ -1,0 +1,37 @@
+
+# Environment variables and secrets
+.env
+.env.*
+.streamlit/secrets.toml
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Generated data
+data/
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.bak
+*.pre_integration.bak
+# Private keys
+*.pem
+*.key
