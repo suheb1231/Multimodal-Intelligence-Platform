@@ -1,3 +1,15 @@
+
+## 🎥 Project Demo Video
+
+Watch the complete 10-minute demonstration of the Multimodal Intelligence Platform.
+
+[▶ Watch Project Demo Video](https://drive.google.com/file/d/1rvWovgLIXdrYLqZDGo7OZdgNJ69nS9Xd/view?usp=sharing)
+
+## 🚀 Live Application
+
+[🌐 Open Multimodal Intelligence Platform](https://multimodal-ai-platform.streamlit.app/)
+
+
 # Coursera: Multimodal Intelligence Platform
 
 An AI-powered learning intelligence platform designed to process, organize, retrieve, and analyze educational content across multiple data formats. The project combines multimodal preprocessing, embeddings, retrieval-augmented generation (RAG), evidence management, analytics, and recommendation components into a unified Streamlit application.
