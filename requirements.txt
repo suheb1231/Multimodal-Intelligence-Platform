@@ -12,10 +12,10 @@ pymupdf
 pillow
 opencv-python
 faster-whisper
+av>=11,<19
 pytesseract
 faiss-cpu
 langchain-community
 langchain-huggingface
 langchain-google-genai
-faster-whisper
 openpyxl
