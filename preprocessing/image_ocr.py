@@ -2,11 +2,20 @@
 import pytesseract  # Tesseract OCR engine ko Python se use karne ke liye.
 
 from PIL import Image  # Image open karne ke liye.
-
+import os
 from pathlib import Path  # Image file path handle karne ke liye.
 # Tesseract OCR software ka Windows path set kar rahe hain.
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+import shutil
 
+tesseract_path = shutil.which("tesseract")
+
+if not tesseract_path and os.name == "nt":
+    windows_path = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+    if os.path.exists(windows_path):
+        tesseract_path = windows_path
+
+if tesseract_path:
+    pytesseract.pytesseract.tesseract_cmd = tesseract_path
 def extract_image_text(image_path):  # Image se text extract karne ka function.
 
     image_path = Path(image_path)  # Image path ko Path object mein convert kar rahe hain.

@@ -8,8 +8,19 @@ from PIL import Image  # PDF page image ko OCR ke liye handle karne ke liye.
 from pathlib import Path  # File paths handle karne ke liye.
 
 import io  # PDF page image ko memory mein read karne ke liye.
+import shutil
+import os 
 
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+
+tesseract_path = shutil.which("tesseract")
+
+if not tesseract_path and os.name == "nt":
+    windows_path = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+    if os.path.exists(windows_path):
+        tesseract_path = windows_path
+
+if tesseract_path:
+    pytesseract.pytesseract.tesseract_cmd = tesseract_path
 
 def extract_pdf_pages(pdf_path, asset_id):  # PDF processing function.
 
