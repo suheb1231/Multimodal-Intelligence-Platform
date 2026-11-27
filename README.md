@@ -16,7 +16,7 @@ An AI-powered learning intelligence platform designed to process, organize, retr
 
 ## 1. Project Overview
 
-Educational content is often distributed across different formats, including PDF documents, text files, images, audio, video, quizzes, and discussion data. Working with these resources separately can make it difficult to search for relevant information and understand learning activity.
+Educational content is often distributed across different formats, including PDF documents, text files, images, audio, video, quizzes,transcripts csv/excel,and discussion data. Working with these resources separately can make it difficult to search for relevant information and understand learning activity.
 
 The **Multimodal Intelligence Platform** aims to provide a unified workflow for handling educational assets, extracting useful information, retrieving relevant evidence, and presenting learning-related insights through an interactive application.
 
